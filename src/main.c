@@ -1,8 +1,8 @@
 #include <limits.h>
 #include <unistd.h>
 
-#include "../include/dir_utils.h"
 #include "../include/log.h"
+#include "../include/init.h"
 
 int main(int argc, char *argv[]) {
   (void)argc;
@@ -16,13 +16,10 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  // Create a directory named "test_dir" in the current working directory
-  if (createDir("test_dir", cwd) != 0) {
-    log_message(LOG_ERROR, "Failed to create directory.");
+  if (init_default_setup(cwd, "my_project") != 0) {
+    log_message(LOG_ERROR, "Failed to initialize default setup.");
     return 1;
   }
-  // Log a message to indicate successful execution
-  log_message(LOG_INFO, "Directory created successfully.");
 
   log_message(LOG_INFO, "Hello, World!");
 

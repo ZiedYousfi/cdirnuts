@@ -39,8 +39,8 @@ int init_default_setup(const char *parentDir, const char *projectName) {
     return -1;
   }
 
-  
+
 
   free(projectDir);
-
+  return 0;
 }
