@@ -40,12 +40,14 @@ int init_default_setup(const char *parentDir, const char *projectName) {
   }
   char *srcPath = constructPath("src", projectDir);
 
-  if(createFile("main.c", srcPath) == NULL) {
+  FILE *mainFile = createFile("main.c", srcPath);
+  if(mainFile == NULL) {
     log_message(LOG_ERROR, "Failed to create main.c file.");
     return -1;
   }
 
   free(projectDir);
   free(srcPath);
+  fclose(mainFile);
   return 0;
 }
