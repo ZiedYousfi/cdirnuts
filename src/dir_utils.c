@@ -68,6 +68,9 @@ int createDir(const char *dirName, const char *parentDir) {
                 dirName, parentDir);
   } else {
     log_message(LOG_ERROR, "Error creating directory");
+    log_message(LOG_ERROR, "Error code: %d", statut);
+    free(fullPath);
+    return -1;
   }
 
   free(fullPath);
