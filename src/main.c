@@ -19,6 +19,14 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
+  // Create a directory named "test_dir" in the current working directory
+  if (createDir("test_dir", cwd) != 0) {
+    log_message(LOG_ERROR, "Failed to create directory.");
+    return 1;
+  }
+  // Log a message to indicate successful execution
+  log_message(LOG_INFO, "Directory created successfully.");
+
   log_message(LOG_INFO, "Hello, World!");
 
   // Return 0 to indicate successful execution
