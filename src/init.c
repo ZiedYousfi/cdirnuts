@@ -38,9 +38,14 @@ int init_default_setup(const char *parentDir, const char *projectName) {
     log_message(LOG_ERROR, "Failed to create src directory.");
     return -1;
   }
+  char *srcPath = constructPath("src", projectDir);
 
-
+  if(createFile("main.c", srcPath) == NULL) {
+    log_message(LOG_ERROR, "Failed to create main.c file.");
+    return -1;
+  }
 
   free(projectDir);
+  free(srcPath);
   return 0;
 }
