@@ -36,7 +36,7 @@ int createDir(const char *dirName, const char *parentDir) {
   }
   char fullPath[PATH_MAX];
   if (snprintf(fullPath, sizeof(fullPath), "%s/%s", parentDir, dirName) >=
-      sizeof(fullPath)) {
+      (int)sizeof(fullPath)) {
     log_message(LOG_ERROR, "Full path is too long.");
     return -1;
   }
