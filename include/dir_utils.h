@@ -1,6 +1,8 @@
 #ifndef DIR_UTILS_H
 #define DIR_UTILS_H
 
+#include <stdio.h>
+
 /**
  * @brief Constructs a full path by combining the parent directory and the
  * directory/file name.
@@ -24,5 +26,16 @@ char *constructPath(const char *dirName, const char *parentDir);
  * @return 0 on success, -1 on failure.
  */
 int createDir(const char *dirName, const char *parentDir);
+
+
+/**
+ * @brief Creates a file with the specified name in the given parent directory.
+ *
+ * @param fileName The name of the file to create.
+ * @param parentDir The path of the parent directory where the new file will be
+ * created.
+ * @return A pointer to the created file, or NULL on failure.
+ */
+FILE *createFile(const char *fileName, const char *parentDir);
 
 #endif /* DIR_UTILS_H */
