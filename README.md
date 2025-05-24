@@ -78,4 +78,4 @@ my-awesome-project/
 
 ## License
 
-This project is open source. See LICENSE file for details.
+This project is open source. See [LICENSE file](LICENCE.md) for details.
