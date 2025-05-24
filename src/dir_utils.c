@@ -1,15 +1,7 @@
 #include "../include/dir_utils.h"
+
 #include "../include/log.h"
 
-/**
- * @brief Constructs a full path by combining the parent directory and the
- * directory/file name.
- *
- * @param dirName The name of the directory/file.
- * @param parentDir The path of the parent directory.
- * @return A newly allocated string containing the full path, or NULL on
- * failure.
- */
 char *constructPath(const char *dirName, const char *parentDir) {
   if (parentDir == NULL) {
     log_message(LOG_ERROR, "Parent directory cannot be NULL.");
@@ -28,15 +20,6 @@ char *constructPath(const char *dirName, const char *parentDir) {
   return strdup(fullPath);
 }
 
-/**
- * @brief Creates a directory with the specified name in the given parent
- * directory.
- *
- * @param dirName The name of the directory to create.
- * @param parentDir The path of the parent directory where the new directory
- * will be created.
- * @return 0 on success, -1 on failure.
- */
 int createDir(const char *dirName, const char *parentDir) {
   if (parentDir == NULL) {
     log_message(LOG_ERROR, "Parent directory cannot be NULL.");
@@ -66,4 +49,19 @@ int createDir(const char *dirName, const char *parentDir) {
 
   free(fullPath);
   return 0;
+}
+
+FILE *createFile(const char *fileName, const char *parentDir) {
+  char *filePath = constructPath(fileName, parentDir);
+
+  FILE *newFile = fopen(fileName, "w");
+  if (newFile == NULL) {
+    log_message(LOG_ERROR, "Failed to create file %s in %s", fileName,
+                parentDir);
+    free(filePath);
+    return NULL;
+  }
+
+  free(filePath);
+  return newFile;
 }
