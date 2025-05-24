@@ -10,6 +10,13 @@ typedef enum {
   LOG_ERROR
 } LogLevel;
 
+/**
+ * @brief Logs a message with the specified log level.
+ *
+ * @param level The log level (INFO, WARN, ERROR).
+ * @param fmt The format string for the log message.
+ * @param ... Additional arguments for the format string.
+ */
 void log_message(LogLevel level, const char *fmt, ...);
 
 #endif // LOG_H
