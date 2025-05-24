@@ -7,6 +7,39 @@
 
 #include "../include/log.h"
 
+/**
+ * @brief Creates a directory with the specified name in the given parent directory.
+ *
+ * @param dirName The name of the directory to create.
+ * @param parentDir The path of the parent directory where the new directory will be created.
+ * @return 0 on success, -1 on failure.
+ */
+int createDir(const char *dirName, const char *parentDir) {
+  if (parentDir == NULL) {
+    log_message(LOG_ERROR, "Parent directory cannot be NULL.");
+    return -1;
+  }
+  if (dirName == NULL) {
+    log_message(LOG_ERROR, "Directory name cannot be NULL.");
+    return -1;
+  }
+  char fullPath[PATH_MAX];
+  if (snprintf(fullPath, sizeof(fullPath), "%s/%s", parentDir, dirName) >=
+      (int)sizeof(fullPath)) {
+    log_message(LOG_ERROR, "Full path is too long.");
+    return -1;
+  }
+  int statut = mkdir(fullPath, 0755);
+  if (statut == 0) {
+    log_message(LOG_INFO, "Directory %s was successfully created in %s!",
+                dirName, parentDir);
+  } else {
+    log_message(LOG_ERROR, "Error creating directory");
+  }
+
+  return 0;
+}
+
 int main(int argc, char *argv[]) {
   (void)argc;
   (void)argv;
@@ -33,28 +66,3 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-int createDir(const char *dirName, const char *parentDir) {
-  if (parentDir == NULL) {
-    log_message(LOG_ERROR, "Parent directory cannot be NULL.");
-    return -1;
-  }
-  if (dirName == NULL) {
-    log_message(LOG_ERROR, "Directory name cannot be NULL.");
-    return -1;
-  }
-  char fullPath[PATH_MAX];
-  if (snprintf(fullPath, sizeof(fullPath), "%s/%s", parentDir, dirName) >=
-      (int)sizeof(fullPath)) {
-    log_message(LOG_ERROR, "Full path is too long.");
-    return -1;
-  }
-  int statut = mkdir(fullPath, 0755);  // droits d'accès
-  if (statut == 0) {
-    log_message(LOG_INFO, "Directory %s was successfully created in %s!",
-                dirName, parentDir);
-  } else {
-    log_message(LOG_ERROR, "Error creating directory");
-  }
-
-  return 0;
-}
