@@ -1,6 +1,8 @@
 #include "../include/init.h"
 
 int init_default_setup(const char *parentDir, const char *projectName) {
+  int result = 0;
+  FILE *mainFile = NULL;
   if (parentDir == NULL || projectName == NULL) {
     log_message(LOG_ERROR, "Parent directory or project name cannot be NULL.");
     return -1;
@@ -22,32 +24,38 @@ int init_default_setup(const char *parentDir, const char *projectName) {
   char *projectDir = constructPath(projectName, parentDir);
   if (projectDir == NULL) {
     log_message(LOG_ERROR, "Failed to construct the project directory path.");
-    return -1;
+    result = -1;
+    goto cleanup;
   }
 
-  log_message(LOG_INFO, "Project directory '%s' created successfully in '%s'.", projectName, parentDir);
+  log_message(LOG_INFO, "Project directory '%s' created successfully in '%s'.",
+              projectName, parentDir);
 
   log_message(LOG_INFO, "Project directory path: %s", projectDir);
 
   if (createDir("include", projectDir)) {
     log_message(LOG_ERROR, "Failed to create include directory.");
-    return -1;
+    result = -1;
+    goto cleanup;
   }
 
   if (createDir("src", projectDir)) {
     log_message(LOG_ERROR, "Failed to create src directory.");
-    return -1;
+    result = -1;
+    goto cleanup;
   }
   char *srcPath = constructPath("src", projectDir);
 
   FILE *mainFile = createFile("main.c", srcPath);
-  if(mainFile == NULL) {
+  if (mainFile == NULL) {
     log_message(LOG_ERROR, "Failed to create main.c file.");
-    return -1;
+    result = -1;
+    goto cleanup;
   }
 
-  free(projectDir);
-  free(srcPath);
+cleanup:
   fclose(mainFile);
-  return 0;
+  free(srcPath);
+  free(projectDir);
+  return result;
 }
