@@ -1,7 +1,13 @@
 #ifndef DIR_UTILS_H
 #define DIR_UTILS_H
 
+#include <limits.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 /**
  * @brief Constructs a full path by combining the parent directory and the
