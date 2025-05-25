@@ -64,8 +64,8 @@ FILE *createFile(const char *fileName, const char *parentDir) {
     return NULL;
   }
 
-  log_message(LOG_INFO, "File %s was successfully created in %s!",
-              fileName, parentDir);
+  log_message(LOG_INFO, "File %s was successfully created in %s!", fileName,
+              parentDir);
   if (fputs("// This is a generated file by cdirnuts.\n", newFile) == EOF) {
     log_message(LOG_ERROR, "Failed to write to file %s", fileName);
     fclose(newFile);
@@ -77,9 +77,22 @@ FILE *createFile(const char *fileName, const char *parentDir) {
   return newFile;
 }
 
-FILE *modifyFileContent(FILE *file, const char *content){
-    if (fputs(content, file) == EOF) {
-    log_message(LOG_ERROR, "Failed to write to file");
+// Ahri-approved™ : Version plus sûre et cosy
+FILE *modifyFileContent(FILE *file, const char *content) {
+  if (file == NULL || content == NULL) {
+    log_message(LOG_ERROR, "File pointer or content is NULL.");
     return NULL;
   }
+  rewind(file);
+
+  if (fputs(content, file) == EOF) {
+    log_message(LOG_ERROR, "Failed to write to file.");
+    return NULL;
+  }
+  if (fflush(file) != 0 || ftruncate(fileno(file), ftell(file)) != 0) {
+    log_message(LOG_ERROR, "Failed to flush or truncate the file.");
+    return NULL;
+  }
+
+  return file;
 }

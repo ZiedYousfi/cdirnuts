@@ -61,6 +61,14 @@ int init_default_setup(const char *parentDir, const char *projectName) {
     goto cleanup_init_default_setup;
   }
 
+  mainFile = modifyFileContent(mainFile, "#include <stdio.h>\n\nint main() {\n    printf(\"Hello, World!\\n\");\n    return 0;\n}\n");
+  if (mainFile == NULL) {
+    log_message(LOG_ERROR, "Failed to modify main.c file content.");
+    result = -1;
+    goto cleanup_init_default_setup;
+  }
+  log_message(LOG_INFO, "main.c file created and modified successfully.");
+
 cleanup_init_default_setup:
   if (mainFile) fclose(mainFile);
   if (srcPath) free(srcPath);
