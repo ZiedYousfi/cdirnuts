@@ -76,3 +76,10 @@ FILE *createFile(const char *fileName, const char *parentDir) {
   free(filePath);
   return newFile;
 }
+
+FILE *modifyFileContent(FILE *file, const char *content){
+    if (fputs(content, file) == EOF) {
+    log_message(LOG_ERROR, "Failed to write to file");
+    return NULL;
+  }
+}

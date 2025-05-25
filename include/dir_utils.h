@@ -33,7 +33,6 @@ char *constructPath(const char *dirName, const char *parentDir);
  */
 int createDir(const char *dirName, const char *parentDir);
 
-
 /**
  * @brief Creates a file with the specified name in the given parent directory.
  *
@@ -43,5 +42,14 @@ int createDir(const char *dirName, const char *parentDir);
  * @return A pointer to the created file, or NULL on failure.
  */
 FILE *createFile(const char *fileName, const char *parentDir);
+
+/**
+ * @brief Modifies the content of a file by writing the specified content to it.
+ *
+ * @param filePath The path of the file to modify.
+ * @param content The content to write to the file.
+ * @return A pointer to the modified file, or NULL on failure.
+ */
+FILE *modifyFileContent(FILE *file, const char *content);
 
 #endif /* DIR_UTILS_H */
