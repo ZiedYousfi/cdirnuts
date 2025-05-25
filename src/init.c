@@ -28,7 +28,7 @@ int init_default_setup(const char *parentDir, const char *projectName) {
   if (projectDir == NULL) {
     log_message(LOG_ERROR, "Failed to construct the project directory path.");
     result = -1;
-    goto cleanup;
+    goto cleanup_init_default_setup;
   }
 
   log_message(LOG_INFO, "Project directory '%s' created successfully in '%s'.",
@@ -38,30 +38,30 @@ int init_default_setup(const char *parentDir, const char *projectName) {
   if (createDir("include", projectDir)) {
     log_message(LOG_ERROR, "Failed to create include directory.");
     result = -1;
-    goto cleanup;
+    goto cleanup_init_default_setup;
   }
 
   if (createDir("src", projectDir)) {
     log_message(LOG_ERROR, "Failed to create src directory.");
     result = -1;
-    goto cleanup;
+    goto cleanup_init_default_setup;
   }
 
   srcPath = constructPath("src", projectDir);
   if (srcPath == NULL) {
     log_message(LOG_ERROR, "Failed to construct src directory path.");
     result = -1;
-    goto cleanup;
+    goto cleanup_init_default_setup;
   }
 
   mainFile = createFile("main.c", srcPath);
   if (mainFile == NULL) {
     log_message(LOG_ERROR, "Failed to create main.c file.");
     result = -1;
-    goto cleanup;
+    goto cleanup_init_default_setup;
   }
 
-cleanup:
+cleanup_init_default_setup:
   if (mainFile) fclose(mainFile);
   if (srcPath) free(srcPath);
   if (projectDir) free(projectDir);
