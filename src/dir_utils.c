@@ -77,7 +77,7 @@ FILE *createFile(const char *fileName, const char *parentDir) {
   return newFile;
 }
 
-// Ahri-approved™ : Version plus sûre et cosy
+
 FILE *modifyFileContent(FILE *file, const char *content) {
   if (file == NULL || content == NULL) {
     log_message(LOG_ERROR, "File pointer or content is NULL.");
