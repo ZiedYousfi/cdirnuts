@@ -10,6 +10,7 @@
 
 int main(int argc, char *argv[]) {
   int result = 0;
+  bool shouldFreeProjectName = false;
   char *projectName = PROJECT_NAME;
 
   if (argc > 1) {
@@ -66,7 +67,7 @@ int main(int argc, char *argv[]) {
   log_message(LOG_INFO, "Hello, World!");
 
 cleanup_main:
-  if (projectName) free(projectName);
+  if (shouldFreeProjectName) free(projectName);
   return result;
 
   // char pathTest[] = "/home/user/projects/my_project/src/main/";
