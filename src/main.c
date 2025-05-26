@@ -7,6 +7,7 @@
 #define PROJECT_NAME "my_project"
 
 int main(int argc, char *argv[]) {
+  int result = 0;
   char *projectName = PROJECT_NAME;
 
   if (argc > 1) {
@@ -18,7 +19,8 @@ int main(int argc, char *argv[]) {
           log_message(
               LOG_ERROR,
               "--config as first argument but no config file path provided");
-          return -1;
+          result = 1;
+          goto cleanup_main;
         }
         log_message(LOG_INFO, "Selected config : %s", argv[2]);
       }
@@ -32,12 +34,14 @@ int main(int argc, char *argv[]) {
           log_message(LOG_INFO, "Current directory at startup: %s", cwd);
         } else {
           log_message(LOG_ERROR, "getcwd() error");
-          return 1;
+          result = 1;
+          goto cleanup_main;
         }
       }
       if (init_default_setup(cwd, projectName) != 0) {
         log_message(LOG_ERROR, "Failed to initialize default setup.");
-        return 1;
+        result = 1;
+        goto cleanup_main;
       }
     }
   } else {
@@ -46,17 +50,20 @@ int main(int argc, char *argv[]) {
       log_message(LOG_INFO, "Current directory at startup: %s", cwd);
     } else {
       log_message(LOG_ERROR, "getcwd() error");
-      return 1;
+      result = 1;
+      goto cleanup_main;
     }
 
     if (init_default_setup(cwd, "my_project") != 0) {
       log_message(LOG_ERROR, "Failed to initialize default setup.");
-      return 1;
+      result = 1;
+      goto cleanup_main;
     }
   }
 
   log_message(LOG_INFO, "Hello, World!");
 
-  // Return 0 to indicate successful execution
-  return 0;
+cleanup_main:
+  if (projectName) free(projectName);
+  return result;
 }
