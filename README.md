@@ -9,9 +9,11 @@ CDirNuts is a command-line tool that generates a complete C project structure wi
 ## Features
 
 - Creates standardized C project directory structure
-- Generates essential files (Makefile, README, etc.)
-- Sets up source, header, and build directories
-- Includes common configuration files
+- Generates essential files (Makefile, README.md, .gitignore, LICENSE)
+- Sets up source and include directories
+- Supports custom project names and paths
+- Includes a basic "Hello, World!" C program to get started
+- Configuration file support (--config option)
 - Fast and lightweight
 
 ## Installation
@@ -24,49 +26,72 @@ cd cdirnuts
 # Build the utility
 make
 
-# Install (optional)
-make install
+# Run the utility
+./cdirnuts
 ```
 
 ## Usage
 
 ```bash
-# Create a new C project structure
-./cdirnuts <project-name>
+# Create a new C project with default name "my_project"
+./cdirnuts
 
-# Example
+# Create a new C project with custom name
 ./cdirnuts my-awesome-project
+
+# Create a project with a specific path
+./cdirnuts /path/to/my-project
+
+# Show help
+./cdirnuts --help
+
+# Use a configuration file
+./cdirnuts --config config.txt
 ```
 
 ## Generated Project Structure
 
 ```
-my-awesome-project/
+my_project/
 ├── src/
-│   └── main.c
-├── include/
-│   └── project.h
-├── tests/
-│   └── test_main.c
-├── docs/
-├── Makefile
-├── README.md
-└── .gitignore
+│   └── main.c          # Basic "Hello, World!" program
+├── include/            # Header files directory
+├── Makefile           # Build configuration
+├── README.md          # Project documentation
+├── .gitignore         # Git ignore rules
+└── LICENSE            # License file
 ```
 
-### Directory Descriptions
+### File Descriptions
 
-- **src/**: Source code files (.c)
-- **include/**: Header files (.h)
-- **lib/**: External libraries
-- **tests/**: Unit tests
-- **docs/**: Documentation
+- **src/main.c**: A basic C program with "Hello, World!" output
+- **include/**: Directory for header files (.h)
+- **Makefile**: Build script with gcc configuration (C17 standard)
+- **README.md**: Project documentation template
+- **.gitignore**: Ignores build artifacts (*.o, *.exe, *.out, build/, *.log)
+- **LICENSE**: Empty license file for your project
+
+## Command Line Options
+
+- `--help`: Display help message and usage information
+- `--config <file>`: Specify a configuration file path
+- `[project_name]`: Optional project name (defaults to "my_project")
 
 ## Requirements
 
 - GCC compiler
 - Make utility
 - Unix-like operating system (Linux, macOS, WSL)
+- Standard C library
+
+## Project Structure Details
+
+The generated Makefile includes:
+
+- GCC compiler with C17 standard
+- Warning flags (-Wall -Wextra)
+- Clean target for removing build artifacts
+- Proper compilation rules for C projects
 
 ## Contributing
 
