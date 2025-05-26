@@ -12,6 +12,7 @@ int main(int argc, char *argv[]) {
   int result = 0;
   bool shouldFreeProjectName = false;
   char *projectName = PROJECT_NAME;
+  PathInfo *pathInfo = NULL;
 
   if (argc > 1) {
     if (argv[1][0] == '-') {
@@ -31,7 +32,28 @@ int main(int argc, char *argv[]) {
       projectName = argv[1];
       char cwd[PATH_MAX];
       if (strchr(projectName, '/')) {
-        // TODO: Handle case where projectName contains a path
+        pathInfo = parsePath(projectName);
+        if (pathInfo) {
+          if (pathInfo->isDirectory) {
+            log_message(LOG_INFO, "Project name is a directory: %s",
+                        pathInfo->name);
+          } else {
+            log_message(LOG_INFO, "Project name is a file: %s", pathInfo->name);
+          }
+          if (pathInfo->parentPath) {
+            log_message(LOG_INFO, "Parent path: %s", pathInfo->parentPath);
+            strncpy(cwd, pathInfo->parentPath, sizeof(cwd) - 1);
+            cwd[sizeof(cwd) - 1] = '\0';
+          } else {
+            log_message(LOG_INFO, "No parent path found.");
+          }
+          projectName = pathInfo->name;
+        } else {
+          log_message(LOG_ERROR, "Failed to parse project name path.");
+          result = 1;
+          goto cleanup_main;
+        }
+        shouldFreeProjectName = true;
       } else {
         if (getcwd(cwd, sizeof(cwd)) != NULL) {
           log_message(LOG_INFO, "Current directory at startup: %s", cwd);
@@ -67,6 +89,7 @@ int main(int argc, char *argv[]) {
   log_message(LOG_INFO, "Hello, World!");
 
 cleanup_main:
+  if (pathInfo) free(pathInfo);
   if (shouldFreeProjectName) free(projectName);
   return result;
 
