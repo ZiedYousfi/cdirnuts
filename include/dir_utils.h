@@ -9,6 +9,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "../include/path_utils.h"
+#include "../include/log.h"
+
 /**
  * @brief Constructs a full path by combining the parent directory and the
  * directory/file name.
