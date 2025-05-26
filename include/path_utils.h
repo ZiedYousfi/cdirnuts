@@ -51,4 +51,7 @@ char *constructPath(const char *dirName, const char *parentDir);
  */
 PathInfo *parsePath(const char *path);
 
+PathInfo *createPathInfo();
+
+void freePathInfo(PathInfo *toFree);
 #endif // PATH_UTILS_H

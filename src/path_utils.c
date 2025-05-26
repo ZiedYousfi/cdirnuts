@@ -1,8 +1,10 @@
-#include "../include/log.h"
 #include "../include/path_utils.h"
 
+#include "../include/log.h"
+
 char *copySubstring(const char *source, int start, int end) {
-  if (source == NULL || start < 0 || end < start || end >= (int)strlen(source)) {
+  if (source == NULL || start < 0 || end < start ||
+      end >= (int)strlen(source)) {
     log_message(LOG_ERROR, "Invalid parameters for substring copy.");
     return NULL;
   }
@@ -34,3 +36,40 @@ char *constructPath(const char *dirName, const char *parentDir) {
   }
   return strdup(fullPath);
 }
+
+PathInfo *parsePath(const char *path) {
+  bool shouldFreeResult = false;
+  PathInfo *result = createPathInfo();
+  if (path == NULL || strlen(path) == 0) {
+    log_message(LOG_ERROR, "Path cannot be NULL or empty.");
+    shouldFreeResult = true;
+    goto cleanup_parsePath;
+  }
+
+cleanup_parsePath:
+  if (shouldFreeResult) {
+    freePathInfo(result);
+    result = NULL;
+  }
+
+  if (!result) {
+    return NULL;
+  } else {
+    return result;
+  }
+}
+
+PathInfo *createPathInfo() {
+  PathInfo *result = malloc(sizeof(PathInfo));
+  if (result == NULL) {
+    log_message(LOG_ERROR, "Memory allocation failed for PathInfo.");
+    return NULL;
+  }
+  result->parentPath = NULL;
+  result->name = NULL;
+  result->isDirectory = false;
+
+  return result;
+}
+
+void freePathInfo(PathInfo *toFree) {}
