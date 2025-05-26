@@ -41,7 +41,8 @@ PathInfo *parsePath(const char *path) {
   bool shouldFreeResult = false;
   PathInfo *result = createPathInfo();
   char *name = NULL;
-  if (path == NULL || strlen(path) == 0) {
+
+  if (!path || path[0] == '\0') {
     log_message(LOG_ERROR, "Path cannot be NULL or empty.");
     shouldFreeResult = true;
     goto cleanup_parsePath;
@@ -49,32 +50,54 @@ PathInfo *parsePath(const char *path) {
 
   int pathLen = strlen(path);
 
-  name = calloc(pathLen, sizeof(char));
-
-  if (path[pathLen] == '/') {
+  if (pathLen > 0 && path[pathLen - 1] == '/') {
     result->isDirectory = true;
   }
 
-  for (size_t i = pathLen; i >= 0; i--) {
-    if (path[i] == '/' && (int)i == pathLen && result->isDirectory == true) {
-
+  int pathLastSlashIndex = -1;
+  for (int i = pathLen - 1; i >= 0; i--) {
+    if (path[i] == '/') {
+      pathLastSlashIndex = i;
+      break;
     }
   }
 
+  int nameSize = (pathLastSlashIndex == -1) ? pathLen
+                                            : pathLen - pathLastSlashIndex -
+                                                  (result->isDirectory ? 1 : 0);
+  if (result->isDirectory && pathLastSlashIndex == pathLen - 1) {
+    for (int i = pathLen - 2; i >= 0; i--) {
+      if (path[i] == '/') {
+        pathLastSlashIndex = i;
+        break;
+      }
+    }
+    nameSize = pathLen - pathLastSlashIndex - 1;
+  }
+  if (nameSize > 0) {
+    name = calloc(nameSize + 1, sizeof(char));
+    if (!name) {
+      log_message(LOG_ERROR, "Memory allocation failed for name.");
+      shouldFreeResult = true;
+      goto cleanup_parsePath;
+    }
+    strncpy(name, path + pathLastSlashIndex + 1, nameSize);
+    name[nameSize] = '\0';
+  }
+
+  result->name = name;
+  name = NULL;
+
 cleanup_parsePath:
 
-  if(name) free(name);
+  if (name) free(name);
 
   if (shouldFreeResult) {
     freePathInfo(result);
     result = NULL;
   }
 
-  if (!result) {
-    return NULL;
-  } else {
-    return result;
-  }
+  return result;
 }
 
 PathInfo *createPathInfo() {
@@ -91,8 +114,8 @@ PathInfo *createPathInfo() {
 }
 
 void freePathInfo(PathInfo *toFree) {
-  if(toFree->name) free(toFree->name);
-  if(toFree->parentPath) free(toFree->parentPath);
+  if (toFree->name) free(toFree->name);
+  if (toFree->parentPath) free(toFree->parentPath);
   free(toFree);
   toFree = NULL;
   log_message(LOG_INFO, "PathInfo structure freed successfully.");
