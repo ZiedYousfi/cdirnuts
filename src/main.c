@@ -8,6 +8,14 @@
 
 #define PROJECT_NAME "my_project"
 
+void print_help() {
+  printf("Usage: cdirnuts [options] [project_name]\n");
+  printf("Options:\n");
+  printf("  --help       Show this help message\n");
+  printf("  --config <file>  Specify a configuration file\n");
+  printf("If no project name is provided, 'my_project' will be used.\n");
+}
+
 int main(int argc, char *argv[]) {
   int result = 0;
   bool shouldFreeProjectName = false;
@@ -17,7 +25,8 @@ int main(int argc, char *argv[]) {
   if (argc > 1) {
     if (argv[1][0] == '-') {
       if (strcmp(argv[1], "--help") == 0) {
-        /* code for help */
+        print_help();
+        goto cleanup_main;
       } else if (strcmp(argv[1], "--config") == 0) {
         if (argc <= 2) {
           log_message(

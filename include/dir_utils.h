@@ -13,19 +13,6 @@
 #include "../include/log.h"
 
 /**
- * @brief Constructs a full path by combining the parent directory and the
- * directory/file name.
- *
- * Assumes callers call free() on the returned string when done.
- *
- * @param dirName The name of the directory/file.
- * @param parentDir The path of the parent directory.
- * @return A newly allocated string containing the full path, or NULL on
- * failure.
- */
-char *constructPath(const char *dirName, const char *parentDir);
-
-/**
  * @brief Creates a directory with the specified name in the given parent
  * directory.
  *

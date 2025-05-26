@@ -51,7 +51,20 @@ char *constructPath(const char *dirName, const char *parentDir);
  */
 PathInfo *parsePath(const char *path);
 
+/**
+ * @brief Creates a new PathInfo structure.
+ *
+ * Assumes callers call free() on the returned PathInfo structure when done.
+ *
+ * @return A pointer to a newly allocated PathInfo structure, or NULL on
+ * failure.
+ */
 PathInfo *createPathInfo();
 
+/**
+ * @brief Frees the memory allocated for a PathInfo structure.
+ *
+ * @param toFree The PathInfo structure to free.
+ */
 void freePathInfo(PathInfo *toFree);
 #endif // PATH_UTILS_H
