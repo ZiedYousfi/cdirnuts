@@ -29,16 +29,15 @@ int main(int argc, char *argv[]) {
         log_message(LOG_INFO, "Selected config : %s", argv[2]);
       }
     } else {
-      projectName = argv[1];
       char cwd[PATH_MAX];
-      if (strchr(projectName, '/')) {
-        pathInfo = parsePath(projectName);
+      if (strchr(argv[1], '/')) {
+        pathInfo = parsePath(argv[1]);
         if (pathInfo) {
           if (pathInfo->isDirectory) {
             log_message(LOG_INFO, "Project name is a directory: %s",
                         pathInfo->name);
           } else {
-            log_message(LOG_INFO, "Project name is a file: %s", pathInfo->name);
+            projectName = pathInfo->name;
           }
           if (pathInfo->parentPath) {
             log_message(LOG_INFO, "Parent path: %s", pathInfo->parentPath);
@@ -47,7 +46,6 @@ int main(int argc, char *argv[]) {
           } else {
             log_message(LOG_INFO, "No parent path found.");
           }
-          projectName = pathInfo->name;
         } else {
           log_message(LOG_ERROR, "Failed to parse project name path.");
           result = 1;
