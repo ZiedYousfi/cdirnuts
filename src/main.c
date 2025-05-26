@@ -6,22 +6,6 @@
 
 #define PROJECT_NAME "my_project"
 
-char *copySubstring(const char *source, int start, int end) {
-  if (source == NULL || start < 0 || end < start || end >= (int)strlen(source)) {
-    log_message(LOG_ERROR, "Invalid parameters for substring copy.");
-    return NULL;
-  }
-  int length = end - start + 1;
-  char *substring = malloc(length + 1);
-  if (substring == NULL) {
-    log_message(LOG_ERROR, "Memory allocation failed for substring.");
-    return NULL;
-  }
-  strncpy(substring, source + start, length);
-  substring[length] = '\0';
-  return substring;
-}
-
 int main(int argc, char *argv[]) {
   int result = 0;
   char *projectName = PROJECT_NAME;
