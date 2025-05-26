@@ -88,6 +88,22 @@ PathInfo *parsePath(const char *path) {
   result->name = name;
   name = NULL;
 
+  if (pathLastSlashIndex == -1) {
+    result->parentPath = strdup("");
+  } else {
+    result->parentPath = copySubstring(path, 0, pathLastSlashIndex - 1);
+    if (!result->parentPath) {
+      log_message(LOG_ERROR, "Memory allocation failed for parentPath.");
+      shouldFreeResult = true;
+      goto cleanup_parsePath;
+    }
+  }
+  if (result->parentPath == NULL) {
+    log_message(LOG_ERROR, "Failed to copy parent path.");
+    shouldFreeResult = true;
+    goto cleanup_parsePath;
+  }
+
 cleanup_parsePath:
 
   if (name) free(name);
