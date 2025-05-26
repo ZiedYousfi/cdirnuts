@@ -40,13 +40,31 @@ char *constructPath(const char *dirName, const char *parentDir) {
 PathInfo *parsePath(const char *path) {
   bool shouldFreeResult = false;
   PathInfo *result = createPathInfo();
+  char *name = NULL;
   if (path == NULL || strlen(path) == 0) {
     log_message(LOG_ERROR, "Path cannot be NULL or empty.");
     shouldFreeResult = true;
     goto cleanup_parsePath;
   }
 
+  int pathLen = strlen(path);
+
+  name = calloc(pathLen, sizeof(char));
+
+  if (path[pathLen] == '/') {
+    result->isDirectory = true;
+  }
+
+  for (size_t i = pathLen; i >= 0; i--) {
+    if (path[i] == '/' && (int)i == pathLen && result->isDirectory == true) {
+
+    }
+  }
+
 cleanup_parsePath:
+
+  if(name) free(name);
+
   if (shouldFreeResult) {
     freePathInfo(result);
     result = NULL;
@@ -72,4 +90,10 @@ PathInfo *createPathInfo() {
   return result;
 }
 
-void freePathInfo(PathInfo *toFree) {}
+void freePathInfo(PathInfo *toFree) {
+  if(toFree->name) free(toFree->name);
+  if(toFree->parentPath) free(toFree->parentPath);
+  free(toFree);
+  toFree = NULL;
+  log_message(LOG_INFO, "PathInfo structure freed successfully.");
+}
