@@ -85,7 +85,6 @@ int main(int argc, char *argv[]) {
       result = 1;
       goto cleanup_main;
     }
-
     if (init_default_setup(cwd, "my_project") != 0) {
       log_message(LOG_ERROR, "Failed to initialize default setup.");
       result = 1;
@@ -99,5 +98,4 @@ cleanup_main:
   if (pathInfo) free(pathInfo);
   if (shouldFreeProjectName) free(projectName);
   return result;
-
 }
