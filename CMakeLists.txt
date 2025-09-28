@@ -1,28 +1,22 @@
 cmake_minimum_required(VERSION 3.13)
 project(cdirnuts C)
 
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD 23)
 
-set(SRC_FILES
-    src/config_utils.c
-    src/dir_utils.c
-    src/init.c
-    src/log.c
-    src/main.c
-    src/path_utils.c
-)
-
-add_executable(cdirnuts ${SRC_FILES})
+add_executable(cdirnuts ${CMAKE_SOURCE_DIR}/src/main.c)
 
 target_include_directories(cdirnuts PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
+add_library(config_impl STATIC src/config_utils/config_utils.c)
 # Match the compiler and linker flags from the Makefile
+
+target_link_libraries(cdirnuts PRIVATE config_impl)
 target_compile_options(cdirnuts PRIVATE -Wall -Wextra -Werror -fsanitize=address -g)
 target_link_options(cdirnuts PRIVATE -fsanitize=address)
 
 # Place the runtime binary in the repository's build/ directory so existing scripts continue to work
 set_target_properties(cdirnuts PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build
+RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build
 )
 
 # Optional: a small option to build tests if desired
