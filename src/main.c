@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
   PathInfo *pathInfo = NULL;
 
   if (argc > 1) {
-    for (size_t i = 1; i < argc; i++) {
+    for (int i = 1; i < argc; i++) {
       OptType opt_type = 0;
       if (strcmp(argv[i], "--help") == 0) {
         opt_type = OPT_HELP;
