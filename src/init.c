@@ -1,14 +1,14 @@
 #include "../include/init.h"
 
-int init_default_setup(const char *parentDir, const char *projectName) {
+int init_default_setup(const char* parentDir, const char* projectName) {
   int result = 0;
-  FILE *mainFile = NULL;
-  char *projectDir = NULL;
-  char *srcPath = NULL;
-  FILE *gitignoreFile = NULL;
-  FILE *readmeFile = NULL;
-  FILE *makefileFile = NULL;
-  FILE *licenseFile = NULL;
+  FILE* mainFile = NULL;
+  char* projectDir = NULL;
+  char* srcPath = NULL;
+  FILE* gitignoreFile = NULL;
+  FILE* readmeFile = NULL;
+  FILE* makefileFile = NULL;
+  FILE* licenseFile = NULL;
   // FILE *authorsFile = NULL;
 
   if (parentDir == NULL || projectName == NULL) {

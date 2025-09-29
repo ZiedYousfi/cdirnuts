@@ -1,14 +1,9 @@
-#ifndef LOG_H
-#define LOG_H
+#pragma once
 
-#include <stdio.h>
 #include <stdarg.h>
+#include <stdio.h>
 
-typedef enum {
-  LOG_INFO,
-  LOG_WARN,
-  LOG_ERROR
-} LogLevel;
+typedef enum { LOG_INFO, LOG_WARN, LOG_ERROR } LogLevel;
 
 /**
  * @brief Logs a message with the specified log level.
@@ -17,6 +12,4 @@ typedef enum {
  * @param fmt The format string for the log message.
  * @param ... Additional arguments for the format string.
  */
-void log_message(LogLevel level, const char *fmt, ...);
-
-#endif // LOG_H
+void log_message(LogLevel level, const char* fmt, ...);

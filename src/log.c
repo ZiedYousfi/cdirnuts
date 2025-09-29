@@ -2,8 +2,8 @@
 
 #include <stdarg.h>
 
-void log_message(LogLevel level, const char *fmt, ...) {
-  const char *level_str = "";
+void log_message(LogLevel level, const char* fmt, ...) {
+  const char* level_str = "";
   switch (level) {
     case LOG_INFO:
       level_str = "INFO";

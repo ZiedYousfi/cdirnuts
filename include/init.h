@@ -1,11 +1,10 @@
-#ifndef INIT_H
-#define INIT_H
+#pragma once
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "./dir_utils.h"
+#include "./dir.h"
 #include "./log.h"
 
 /**
@@ -14,6 +13,4 @@
  * @return 0 on success, -1 on failure.
  */
 
-int init_default_setup(const char *parentDir, const char *projectName);
-
-#endif // INIT_H
+int init_default_setup(const char* parentDir, const char* projectName);

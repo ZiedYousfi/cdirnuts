@@ -7,19 +7,18 @@ add_executable(cdirnuts ${CMAKE_SOURCE_DIR}/src/main.c)
 
 target_include_directories(cdirnuts PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
-add_library(config_impl STATIC src/config_utils/config_utils.c)
-# Match the compiler and linker flags from the Makefile
+add_library(config_impl STATIC src/config.c)
+add_library(dir_impl STATIC src/dir.c)
+add_library(path_impl STATIC src/path.c)
+add_library(init_impl STATIC src/init.c)
+add_library(log_impl STATIC src/log.c)
 
-target_link_libraries(cdirnuts PRIVATE config_impl)
+target_link_libraries(cdirnuts PRIVATE config_impl dir_impl path_impl init_impl log_impl)
 target_compile_options(cdirnuts PRIVATE -Wall -Wextra -Werror -fsanitize=address -g)
 target_link_options(cdirnuts PRIVATE -fsanitize=address)
-
-# Place the runtime binary in the repository's build/ directory so existing scripts continue to work
 set_target_properties(cdirnuts PROPERTIES
 RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build
 )
-
-# Optional: a small option to build tests if desired
 option(BUILD_TESTS "Build test executable" OFF)
 if(BUILD_TESTS)
     add_executable(cdirnuts_test test/tests/test.c)

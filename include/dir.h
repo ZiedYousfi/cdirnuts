@@ -1,5 +1,4 @@
-#ifndef DIR_UTILS_H
-#define DIR_UTILS_H
+#pragma once
 
 #include <limits.h>
 #include <stdio.h>
@@ -9,8 +8,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "../include/path_utils.h"
 #include "../include/log.h"
+#include "../include/path.h"
 
 /**
  * @brief Creates a directory with the specified name in the given parent
@@ -21,7 +20,7 @@
  * will be created.
  * @return 0 on success, -1 on failure.
  */
-int createDir(const char *dirName, const char *parentDir);
+int createDir(const char* dirName, const char* parentDir);
 
 /**
  * @brief Creates a file with the specified name in the given parent directory.
@@ -31,7 +30,7 @@ int createDir(const char *dirName, const char *parentDir);
  * created.
  * @return A pointer to the created file, or NULL on failure.
  */
-FILE *createFile(const char *fileName, const char *parentDir);
+FILE* createFile(const char* fileName, const char* parentDir);
 
 /**
  * @brief Modifies the content of a file by writing the specified content to it.
@@ -40,6 +39,4 @@ FILE *createFile(const char *fileName, const char *parentDir);
  * @param content The content to write to the file.
  * @return A pointer to the modified file, or NULL on failure.
  */
-FILE *modifyFileContent(FILE *file, const char *content);
-
-#endif /* DIR_UTILS_H */
+FILE* modifyFileContent(FILE* file, const char* content);

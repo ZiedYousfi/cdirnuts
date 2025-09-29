@@ -1,10 +1,11 @@
 #include <limits.h>
+#include <stdbool.h>
 #include <unistd.h>
 
-#include "../include/dir_utils.h"
+#include "../include/dir.h"
 #include "../include/init.h"
 #include "../include/log.h"
-#include "../include/path_utils.h"
+#include "../include/path.h"
 
 #define PROJECT_NAME "my_project"
 
@@ -16,24 +17,24 @@ void print_help() {
   printf("If no project name is provided, 'my_project' will be used.\n");
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   int result = 0;
   bool shouldFreeProjectName = false;
-  char *projectName = PROJECT_NAME;
-  PathInfo *pathInfo = NULL;
+  char* projectName = PROJECT_NAME;
+  PathInfo* pathInfo = NULL;
 
   if (argc > 1) {
     if (argv[1][0] == '-') {
       if (strcmp(argv[1], "--help") == 0) {
         print_help();
-        goto cleanup_main;
+        goto cleanup;
       } else if (strcmp(argv[1], "--config") == 0) {
         if (argc <= 2) {
           log_message(
               LOG_ERROR,
               "--config as first argument but no config file path provided");
           result = 1;
-          goto cleanup_main;
+          goto cleanup;
         }
         log_message(LOG_INFO, "Selected config : %s", argv[2]);
       }
@@ -58,7 +59,7 @@ int main(int argc, char *argv[]) {
         } else {
           log_message(LOG_ERROR, "Failed to parse project name path.");
           result = 1;
-          goto cleanup_main;
+          goto cleanup;
         }
         shouldFreeProjectName = true;
       } else {
@@ -67,13 +68,13 @@ int main(int argc, char *argv[]) {
         } else {
           log_message(LOG_ERROR, "getcwd() error");
           result = 1;
-          goto cleanup_main;
+          goto cleanup;
         }
       }
       if (init_default_setup(cwd, projectName) != 0) {
         log_message(LOG_ERROR, "Failed to initialize default setup.");
         result = 1;
-        goto cleanup_main;
+        goto cleanup;
       }
     }
   } else {
@@ -83,18 +84,18 @@ int main(int argc, char *argv[]) {
     } else {
       log_message(LOG_ERROR, "getcwd() error");
       result = 1;
-      goto cleanup_main;
+      goto cleanup;
     }
     if (init_default_setup(cwd, "my_project") != 0) {
       log_message(LOG_ERROR, "Failed to initialize default setup.");
       result = 1;
-      goto cleanup_main;
+      goto cleanup;
     }
   }
 
   log_message(LOG_INFO, "Hello, World!");
 
-cleanup_main:
+cleanup:
   if (pathInfo) free(pathInfo);
   if (shouldFreeProjectName) free(projectName);
   return result;

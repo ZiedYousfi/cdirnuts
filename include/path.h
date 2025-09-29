@@ -1,16 +1,15 @@
-#ifndef PATH_UTILS_H
-#define PATH_UTILS_H
+#pragma once
 
+#include <limits.h>
+#include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
-#include <limits.h>
 #include <unistd.h>
-#include <stdbool.h>
 
 typedef struct {
-  char *parentPath;
-  char *name;
+  char* parentPath;
+  char* name;
   bool isDirectory;
 } PathInfo;
 
@@ -25,7 +24,7 @@ typedef struct {
  * @return A newly allocated string containing the substring, or NULL on
  * failure.
  */
-char *copySubstring(const char *source, int start, int end);
+char* copySubstring(const char* source, int start, int end);
 
 /**
  * @brief Constructs a full path by combining the parent directory and the
@@ -38,7 +37,7 @@ char *copySubstring(const char *source, int start, int end);
  * @return A newly allocated string containing the full path, or NULL on
  * failure.
  */
-char *constructPath(const char *dirName, const char *parentDir);
+char* constructPath(const char* dirName, const char* parentDir);
 
 /**
  * @brief Parses a path string into its components.
@@ -49,7 +48,7 @@ char *constructPath(const char *dirName, const char *parentDir);
  * @return A pointer to a newly allocated PathInfo structure containing the
  * parsed components, or NULL on failure.
  */
-PathInfo *parsePath(const char *path);
+PathInfo* parsePath(const char* path);
 
 /**
  * @brief Creates a new PathInfo structure.
@@ -59,12 +58,11 @@ PathInfo *parsePath(const char *path);
  * @return A pointer to a newly allocated PathInfo structure, or NULL on
  * failure.
  */
-PathInfo *createPathInfo();
+PathInfo* createPathInfo();
 
 /**
  * @brief Frees the memory allocated for a PathInfo structure.
  *
  * @param toFree The PathInfo structure to free.
  */
-void freePathInfo(PathInfo *toFree);
-#endif // PATH_UTILS_H
+void freePathInfo(PathInfo* toFree);

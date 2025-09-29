@@ -1,6 +1,6 @@
-#include "../include/dir_utils.h"
+#include "../include/dir.h"
 
-int createDir(const char *dirName, const char *parentDir) {
+int createDir(const char* dirName, const char* parentDir) {
   if (parentDir == NULL) {
     log_message(LOG_ERROR, "Parent directory cannot be NULL.");
     return -1;
@@ -10,7 +10,7 @@ int createDir(const char *dirName, const char *parentDir) {
     return -1;
   }
 
-  char *fullPath = constructPath(dirName, parentDir);
+  char* fullPath = constructPath(dirName, parentDir);
   if (fullPath == NULL) {
     log_message(LOG_ERROR, "Failed to construct the full path.");
     return -1;
@@ -31,12 +31,12 @@ int createDir(const char *dirName, const char *parentDir) {
   return 0;
 }
 
-FILE *createFile(const char *fileName, const char *parentDir) {
-  char *filePath = constructPath(fileName, parentDir);
+FILE* createFile(const char* fileName, const char* parentDir) {
+  char* filePath = constructPath(fileName, parentDir);
 
   log_message(LOG_INFO, "Creating file %s in %s", fileName, parentDir);
 
-  FILE *newFile = fopen(filePath, "w");
+  FILE* newFile = fopen(filePath, "w");
   if (newFile == NULL) {
     log_message(LOG_ERROR, "Failed to create file %s in %s", fileName,
                 parentDir);
@@ -57,8 +57,7 @@ FILE *createFile(const char *fileName, const char *parentDir) {
   return newFile;
 }
 
-
-FILE *modifyFileContent(FILE *file, const char *content) {
+FILE* modifyFileContent(FILE* file, const char* content) {
   if (file == NULL || content == NULL) {
     log_message(LOG_ERROR, "File pointer or content is NULL.");
     return NULL;
