@@ -1,5 +1,4 @@
 #include <limits.h>
-#include <stdbool.h>
 #include <unistd.h>
 
 #include "../include/dir.h"
@@ -9,6 +8,7 @@
 
 #define PROJECT_NAME "my_project"
 
+/// @brief Prints help information to the console.
 void print_help() {
   printf("Usage: cdirnuts [options] [project_name]\n");
   printf("Options:\n");
