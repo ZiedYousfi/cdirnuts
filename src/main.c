@@ -17,11 +17,11 @@ void print_help() {
   printf("If no project name is provided, 'my_project' will be used.\n");
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
   int result = 0;
   bool shouldFreeProjectName = false;
-  char* projectName = PROJECT_NAME;
-  PathInfo* pathInfo = NULL;
+  char *projectName = PROJECT_NAME;
+  PathInfo *pathInfo = NULL;
 
   if (argc > 1) {
     if (argv[1][0] == '-') {
@@ -94,7 +94,9 @@ int main(int argc, char* argv[]) {
   log_info("Hello, World!");
 
 cleanup:
-  if (pathInfo) free(pathInfo);
-  if (shouldFreeProjectName) free(projectName);
+  if (pathInfo)
+    free(pathInfo);
+  if (shouldFreeProjectName)
+    free(projectName);
   return result;
 }

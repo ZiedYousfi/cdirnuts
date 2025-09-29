@@ -13,4 +13,4 @@
  * @return 0 on success, -1 on failure.
  */
 
-int init_default_setup(const char* parentDir, const char* projectName);
+int init_default_setup(const char *parentDir, const char *projectName);

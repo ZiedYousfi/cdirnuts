@@ -11,4 +11,4 @@
 #include "./dir.h"
 #include "./log.h"
 
-int executeCommand(const char* command);
+int executeCommand(const char *command);

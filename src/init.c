@@ -1,14 +1,14 @@
 #include "../include/init.h"
 
-int init_default_setup(const char* parentDir, const char* projectName) {
+int init_default_setup(const char *parentDir, const char *projectName) {
   int result = 0;
-  FILE* mainFile = NULL;
-  char* projectDir = NULL;
-  char* srcPath = NULL;
-  FILE* gitignoreFile = NULL;
-  FILE* readmeFile = NULL;
-  FILE* makefileFile = NULL;
-  FILE* licenseFile = NULL;
+  FILE *mainFile = NULL;
+  char *projectDir = NULL;
+  char *srcPath = NULL;
+  FILE *gitignoreFile = NULL;
+  FILE *readmeFile = NULL;
+  FILE *makefileFile = NULL;
+  FILE *licenseFile = NULL;
   // FILE *authorsFile = NULL;
 
   if (parentDir == NULL || projectName == NULL) {
@@ -66,10 +66,9 @@ int init_default_setup(const char* parentDir, const char* projectName) {
     goto cleanup_init_default_setup;
   }
 
-  mainFile =
-      modifyFileContent(mainFile,
-                        "#include <stdio.h>\n\nint main() {\n    "
-                        "printf(\"Hello, World!\\n\");\n    return 0;\n}\n");
+  mainFile = modifyFileContent(
+      mainFile, "#include <stdio.h>\n\nint main() {\n    "
+                "printf(\"Hello, World!\\n\");\n    return 0;\n}\n");
   if (mainFile == NULL) {
     log_error("Failed to modify main.c file content.");
     result = -1;
@@ -133,12 +132,19 @@ int init_default_setup(const char* parentDir, const char* projectName) {
   }
 
 cleanup_init_default_setup:
-  if (licenseFile) fclose(licenseFile);
-  if (makefileFile) fclose(makefileFile);
-  if (readmeFile) fclose(readmeFile);
-  if (gitignoreFile) fclose(gitignoreFile);
-  if (mainFile) fclose(mainFile);
-  if (srcPath) free(srcPath);
-  if (projectDir) free(projectDir);
+  if (licenseFile)
+    fclose(licenseFile);
+  if (makefileFile)
+    fclose(makefileFile);
+  if (readmeFile)
+    fclose(readmeFile);
+  if (gitignoreFile)
+    fclose(gitignoreFile);
+  if (mainFile)
+    fclose(mainFile);
+  if (srcPath)
+    free(srcPath);
+  if (projectDir)
+    free(projectDir);
   return result;
 }

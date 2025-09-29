@@ -2,14 +2,14 @@
 
 #include "../include/log.h"
 
-char* copySubstring(const char* source, int start, int end) {
+char *copySubstring(const char *source, int start, int end) {
   if (source == NULL || start < 0 || end < start ||
       end >= (int)strlen(source)) {
     log_error("Invalid parameters for substring copy.");
     return NULL;
   }
   int length = end - start + 1;
-  char* substring = malloc(length + 1);
+  char *substring = malloc(length + 1);
   if (substring == NULL) {
     log_error("Memory allocation failed for substring.");
     return NULL;
@@ -19,7 +19,7 @@ char* copySubstring(const char* source, int start, int end) {
   return substring;
 }
 
-char* constructPath(const char* dirName, const char* parentDir) {
+char *constructPath(const char *dirName, const char *parentDir) {
   if (parentDir == NULL) {
     log_error("Parent directory cannot be NULL.");
     return NULL;
@@ -37,10 +37,10 @@ char* constructPath(const char* dirName, const char* parentDir) {
   return strdup(fullPath);
 }
 
-PathInfo* parsePath(const char* path) {
+PathInfo *parsePath(const char *path) {
   bool shouldFreeResult = false;
-  PathInfo* result = createPathInfo();
-  char* name = NULL;
+  PathInfo *result = createPathInfo();
+  char *name = NULL;
 
   if (!path || path[0] == '\0') {
     log_error("Path cannot be NULL or empty.");
@@ -106,7 +106,8 @@ PathInfo* parsePath(const char* path) {
 
 cleanup_parsePath:
 
-  if (name) free(name);
+  if (name)
+    free(name);
 
   if (shouldFreeResult) {
     freePathInfo(result);
@@ -116,8 +117,8 @@ cleanup_parsePath:
   return result;
 }
 
-PathInfo* createPathInfo() {
-  PathInfo* result = malloc(sizeof(PathInfo));
+PathInfo *createPathInfo() {
+  PathInfo *result = malloc(sizeof(PathInfo));
   if (result == NULL) {
     log_error("Memory allocation failed for PathInfo.");
     return NULL;
@@ -129,9 +130,11 @@ PathInfo* createPathInfo() {
   return result;
 }
 
-void freePathInfo(PathInfo* toFree) {
-  if (toFree->name) free(toFree->name);
-  if (toFree->parentPath) free(toFree->parentPath);
+void freePathInfo(PathInfo *toFree) {
+  if (toFree->name)
+    free(toFree->name);
+  if (toFree->parentPath)
+    free(toFree->parentPath);
   free(toFree);
   toFree = NULL;
   log_info("PathInfo structure freed successfully.");

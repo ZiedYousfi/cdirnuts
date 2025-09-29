@@ -1,6 +1,6 @@
 #include "../include/config.h"
 
-int executeCommand(const char* command) {
+int executeCommand(const char *command) {
   if (command == NULL) {
     log_error("Command is NULL");
     return -1;
