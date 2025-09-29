@@ -39,8 +39,8 @@ int main(int argc, char *argv[]) {
       switch (opt_type) {
       case OPT_HELP:
         print_help();
-        goto cleanup;
         result = 0;
+        goto cleanup;
 
       case OPT_CONFIG: {
         if (i + 1 >= argc) {
