@@ -32,28 +32,32 @@ int createDir(const char* dirName, const char* parentDir) {
 }
 
 FILE* createFile(const char* fileName, const char* parentDir) {
+  FILE* newFile = NULL;
   char* filePath = constructPath(fileName, parentDir);
 
   log_message(LOG_INFO, "Creating file %s in %s", fileName, parentDir);
 
-  FILE* newFile = fopen(filePath, "w");
+  newFile = fopen(filePath, "w");
   if (newFile == NULL) {
     log_message(LOG_ERROR, "Failed to create file %s in %s", fileName,
                 parentDir);
-    free(filePath);
-    return NULL;
+    goto cleanup;
   }
 
   log_message(LOG_INFO, "File %s was successfully created in %s!", fileName,
               parentDir);
   if (fputs("// This is a generated file by cdirnuts.\n", newFile) == EOF) {
     log_message(LOG_ERROR, "Failed to write to file %s", fileName);
-    fclose(newFile);
-    free(filePath);
-    return NULL;
+    goto cleanup;
   }
 
+cleanup:
   free(filePath);
+  if (newFile) {
+    fclose(newFile);
+    return NULL;
+  }
+  
   return newFile;
 }
 
