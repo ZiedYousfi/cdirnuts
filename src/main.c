@@ -39,12 +39,14 @@ int main(int argc, char *argv[]) {
       switch (opt_type) {
       case OPT_HELP:
         print_help();
-        return 0;
+        goto cleanup;
+        result = 0;
 
       case OPT_CONFIG: {
         if (i + 1 >= argc) {
           log_error("Error: --config option requires a file argument.");
-          return 1;
+          result = 1;
+          goto cleanup;
         }
         const char *configFile = argv[i + 1];
 
