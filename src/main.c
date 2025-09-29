@@ -17,6 +17,8 @@ void print_help() {
   printf("If no project name is provided, 'my_project' will be used.\n");
 }
 
+typedef enum { OPT_HELP, OPT_CONFIG, OPT_PROJECT_NAME } OptType;
+
 int main(int argc, char *argv[]) {
   int result = 0;
   bool shouldFreeProjectName = false;
@@ -24,70 +26,40 @@ int main(int argc, char *argv[]) {
   PathInfo *pathInfo = NULL;
 
   if (argc > 1) {
-    if (argv[1][0] == '-') {
-      if (strcmp(argv[1], "--help") == 0) {
-        print_help();
-        goto cleanup;
-      } else if (strcmp(argv[1], "--config") == 0) {
-        if (argc <= 2) {
-          log_error(
-              "--config as first argument but no config file path provided");
-          result = 1;
-          goto cleanup;
-        }
-        log_info("Selected config : %s", argv[2]);
-      }
-    } else {
-      char cwd[PATH_MAX];
-      if (strchr(argv[1], '/')) {
-        pathInfo = parsePath(argv[1]);
-        if (pathInfo) {
-          if (pathInfo->isDirectory) {
-            log_info("Project name is a directory: %s", pathInfo->name);
-          } else {
-            projectName = pathInfo->name;
-          }
-          if (pathInfo->parentPath) {
-            log_info("Parent path: %s", pathInfo->parentPath);
-            strncpy(cwd, pathInfo->parentPath, sizeof(cwd) - 1);
-            cwd[sizeof(cwd) - 1] = '\0';
-          } else {
-            log_info("No parent path found.");
-          }
-        } else {
-          log_error("Failed to parse project name path.");
-          result = 1;
-          goto cleanup;
-        }
-        shouldFreeProjectName = true;
+    for (size_t i = 1; i < argc; i++) {
+      OptType opt_type = 0;
+      if (strcmp(argv[i], "--help") == 0) {
+        opt_type = OPT_HELP;
+      } else if (strcmp(argv[i], "--config") == 0) {
+        opt_type = OPT_CONFIG;
       } else {
-        if (getcwd(cwd, sizeof(cwd)) != NULL) {
-          log_info("Current directory at startup: %s", cwd);
-        } else {
-          log_error("getcwd() error");
-          result = 1;
-          goto cleanup;
+        opt_type = OPT_PROJECT_NAME;
+      }
+
+      switch (opt_type) {
+      case OPT_HELP:
+        print_help();
+        return 0;
+
+      case OPT_CONFIG: {
+        if (i + 1 >= argc) {
+          log_error("Error: --config option requires a file argument.");
+          return 1;
         }
+        const char *configFile = argv[i + 1];
+
+        // Load configuration from the specified file
+        // (Implementation of config loading is not yet done)
+
+        log_info("Loading configuration from %s", configFile);
+        i++;
+        break;
       }
-      if (init_default_setup(cwd, projectName) != 0) {
-        log_error("Failed to initialize default setup.");
-        result = 1;
-        goto cleanup;
+      case OPT_PROJECT_NAME:
+        projectName = argv[i];
+        shouldFreeProjectName = false;
+        break;
       }
-    }
-  } else {
-    char cwd[PATH_MAX];
-    if (getcwd(cwd, sizeof(cwd)) != NULL) {
-      log_info("Current directory at startup: %s", cwd);
-    } else {
-      log_error("getcwd() error");
-      result = 1;
-      goto cleanup;
-    }
-    if (init_default_setup(cwd, "my_project") != 0) {
-      log_error("Failed to initialize default setup.");
-      result = 1;
-      goto cleanup;
     }
   }
 
