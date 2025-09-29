@@ -5,13 +5,13 @@
 char* copySubstring(const char* source, int start, int end) {
   if (source == NULL || start < 0 || end < start ||
       end >= (int)strlen(source)) {
-    log_message(LOG_ERROR, "Invalid parameters for substring copy.");
+    log_error("Invalid parameters for substring copy.");
     return NULL;
   }
   int length = end - start + 1;
   char* substring = malloc(length + 1);
   if (substring == NULL) {
-    log_message(LOG_ERROR, "Memory allocation failed for substring.");
+    log_error("Memory allocation failed for substring.");
     return NULL;
   }
   strncpy(substring, source + start, length);
@@ -21,17 +21,17 @@ char* copySubstring(const char* source, int start, int end) {
 
 char* constructPath(const char* dirName, const char* parentDir) {
   if (parentDir == NULL) {
-    log_message(LOG_ERROR, "Parent directory cannot be NULL.");
+    log_error("Parent directory cannot be NULL.");
     return NULL;
   }
   if (dirName == NULL) {
-    log_message(LOG_ERROR, "Directory name cannot be NULL.");
+    log_error("Directory name cannot be NULL.");
     return NULL;
   }
   char fullPath[PATH_MAX];
   if (snprintf(fullPath, sizeof(fullPath), "%s/%s", parentDir, dirName) >=
       (int)sizeof(fullPath)) {
-    log_message(LOG_ERROR, "Full path is too long.");
+    log_error("Full path is too long.");
     return NULL;
   }
   return strdup(fullPath);
@@ -43,7 +43,7 @@ PathInfo* parsePath(const char* path) {
   char* name = NULL;
 
   if (!path || path[0] == '\0') {
-    log_message(LOG_ERROR, "Path cannot be NULL or empty.");
+    log_error("Path cannot be NULL or empty.");
     shouldFreeResult = true;
     goto cleanup_parsePath;
   }
@@ -77,7 +77,7 @@ PathInfo* parsePath(const char* path) {
   if (nameSize > 0) {
     name = calloc(nameSize + 1, sizeof(char));
     if (!name) {
-      log_message(LOG_ERROR, "Memory allocation failed for name.");
+      log_error("Memory allocation failed for name.");
       shouldFreeResult = true;
       goto cleanup_parsePath;
     }
@@ -93,13 +93,13 @@ PathInfo* parsePath(const char* path) {
   } else {
     result->parentPath = copySubstring(path, 0, pathLastSlashIndex - 1);
     if (!result->parentPath) {
-      log_message(LOG_ERROR, "Memory allocation failed for parentPath.");
+      log_error("Memory allocation failed for parentPath.");
       shouldFreeResult = true;
       goto cleanup_parsePath;
     }
   }
   if (result->parentPath == NULL) {
-    log_message(LOG_ERROR, "Failed to copy parent path.");
+    log_error("Failed to copy parent path.");
     shouldFreeResult = true;
     goto cleanup_parsePath;
   }
@@ -119,7 +119,7 @@ cleanup_parsePath:
 PathInfo* createPathInfo() {
   PathInfo* result = malloc(sizeof(PathInfo));
   if (result == NULL) {
-    log_message(LOG_ERROR, "Memory allocation failed for PathInfo.");
+    log_error("Memory allocation failed for PathInfo.");
     return NULL;
   }
   result->parentPath = NULL;
@@ -134,5 +134,5 @@ void freePathInfo(PathInfo* toFree) {
   if (toFree->parentPath) free(toFree->parentPath);
   free(toFree);
   toFree = NULL;
-  log_message(LOG_INFO, "PathInfo structure freed successfully.");
+  log_info("PathInfo structure freed successfully.");
 }

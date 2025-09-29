@@ -30,13 +30,12 @@ int main(int argc, char* argv[]) {
         goto cleanup;
       } else if (strcmp(argv[1], "--config") == 0) {
         if (argc <= 2) {
-          log_message(
-              LOG_ERROR,
+          log_error(
               "--config as first argument but no config file path provided");
           result = 1;
           goto cleanup;
         }
-        log_message(LOG_INFO, "Selected config : %s", argv[2]);
+        log_info("Selected config : %s", argv[2]);
       }
     } else {
       char cwd[PATH_MAX];
@@ -44,35 +43,34 @@ int main(int argc, char* argv[]) {
         pathInfo = parsePath(argv[1]);
         if (pathInfo) {
           if (pathInfo->isDirectory) {
-            log_message(LOG_INFO, "Project name is a directory: %s",
-                        pathInfo->name);
+            log_info("Project name is a directory: %s", pathInfo->name);
           } else {
             projectName = pathInfo->name;
           }
           if (pathInfo->parentPath) {
-            log_message(LOG_INFO, "Parent path: %s", pathInfo->parentPath);
+            log_info("Parent path: %s", pathInfo->parentPath);
             strncpy(cwd, pathInfo->parentPath, sizeof(cwd) - 1);
             cwd[sizeof(cwd) - 1] = '\0';
           } else {
-            log_message(LOG_INFO, "No parent path found.");
+            log_info("No parent path found.");
           }
         } else {
-          log_message(LOG_ERROR, "Failed to parse project name path.");
+          log_error("Failed to parse project name path.");
           result = 1;
           goto cleanup;
         }
         shouldFreeProjectName = true;
       } else {
         if (getcwd(cwd, sizeof(cwd)) != NULL) {
-          log_message(LOG_INFO, "Current directory at startup: %s", cwd);
+          log_info("Current directory at startup: %s", cwd);
         } else {
-          log_message(LOG_ERROR, "getcwd() error");
+          log_error("getcwd() error");
           result = 1;
           goto cleanup;
         }
       }
       if (init_default_setup(cwd, projectName) != 0) {
-        log_message(LOG_ERROR, "Failed to initialize default setup.");
+        log_error("Failed to initialize default setup.");
         result = 1;
         goto cleanup;
       }
@@ -80,20 +78,20 @@ int main(int argc, char* argv[]) {
   } else {
     char cwd[PATH_MAX];
     if (getcwd(cwd, sizeof(cwd)) != NULL) {
-      log_message(LOG_INFO, "Current directory at startup: %s", cwd);
+      log_info("Current directory at startup: %s", cwd);
     } else {
-      log_message(LOG_ERROR, "getcwd() error");
+      log_error("getcwd() error");
       result = 1;
       goto cleanup;
     }
     if (init_default_setup(cwd, "my_project") != 0) {
-      log_message(LOG_ERROR, "Failed to initialize default setup.");
+      log_error("Failed to initialize default setup.");
       result = 1;
       goto cleanup;
     }
   }
 
-  log_message(LOG_INFO, "Hello, World!");
+  log_info("Hello, World!");
 
 cleanup:
   if (pathInfo) free(pathInfo);
