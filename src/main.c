@@ -48,6 +48,13 @@ int main(int argc, char *argv[]) {
           result = 1;
           goto cleanup;
         }
+
+        if (strncmp(argv[i + 1], "--", 2) == 0) {
+          log_error("Error: Invalid config file name.");
+          result = 1;
+          goto cleanup;
+        }
+
         const char *configFile = argv[i + 1];
 
         // Load configuration from the specified file
