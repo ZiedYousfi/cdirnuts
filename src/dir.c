@@ -32,6 +32,11 @@ int createDir(const char* dirName, const char* parentDir) {
 }
 
 FILE* createFile(const char* fileName, const char* parentDir) {
+  if (fileName == NULL || parentDir == NULL) {
+    log_message(LOG_ERROR, "File name or parent directory is NULL.");
+    return NULL;
+  }
+
   FILE* newFile = NULL;
   char* filePath = constructPath(fileName, parentDir);
 
@@ -57,7 +62,7 @@ cleanup:
     fclose(newFile);
     return NULL;
   }
-  
+
   return newFile;
 }
 
