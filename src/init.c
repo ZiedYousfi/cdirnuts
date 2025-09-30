@@ -1,6 +1,18 @@
 #include "../include/init.h"
 #include "../include/path.h"
 
+/**
+ * Initialize a default C project layout under a given parent directory.
+ *
+ * Creates a project directory named by projectName containing src, include, and tests
+ * subdirectories and populates the tree with a README.md, src/main.c, .gitignore,
+ * and CMakeLists.txt (using projectName where appropriate).
+ *
+ * @param parentDir Path to the directory in which the project directory will be created.
+ * @param projectName Name of the project; used as the project directory name and embedded
+ *                    in generated files (README, main.c greeting, and CMakeLists).
+ * @returns 0 on success, -1 on error (invalid inputs, allocation or path construction failures,
+ *          or failure to add files/subdirectories). */
 int init_default_setup(const char *parentDir, const char *projectName) {
   if (!parentDir || !projectName) {
     log_error("parentDir and projectName must be provided");
