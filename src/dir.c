@@ -70,7 +70,7 @@ int modifyFileContent(FILE *file, const char *content) {
   return 0;
 }
 
-int addDirToDir(cdirnutsDir *parent, cdirnutsDir *child) {
+int addSubDirToDir(cdirnutsDir *parent, cdirnutsDir *child) {
   if (!parent || !child) {
     log_error("Invalid directory structure.");
     return -1;
