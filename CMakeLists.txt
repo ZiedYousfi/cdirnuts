@@ -13,6 +13,10 @@ add_library(path_impl STATIC src/path.c)
 add_library(init_impl STATIC src/init.c)
 add_library(log_impl STATIC src/log.c)
 
+target_link_libraries(init_impl PRIVATE dir_impl path_impl log_impl)
+target_link_libraries(dir_impl PRIVATE path_impl log_impl)
+target_link_libraries(config_impl PRIVATE log_impl)
+
 target_link_libraries(cdirnuts PRIVATE config_impl dir_impl path_impl init_impl log_impl)
 target_compile_options(cdirnuts PRIVATE -Wall -Wextra -Werror -fsanitize=address -g)
 target_link_options(cdirnuts PRIVATE -fsanitize=address)
