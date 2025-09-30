@@ -33,8 +33,18 @@ int createFile(cdirnutsFile *file);
 
 int modifyFileContent(FILE *file, const char *content);
 
+/**
+ * Adds a subdirectory to a parent directory.
+ * IMPORTANT: This function takes ownership of the subDir parameter.
+ * After calling, the caller must NOT free or use the subDir pointer.
+ */
 int addSubDirToDir(cdirnutsDir *parentDir, cdirnutsDir *subDir);
 
+/**
+ * Adds a file to a directory.
+ * IMPORTANT: This function takes ownership of the file parameter.
+ * After calling, the caller must NOT free or use the file pointer.
+ */
 int addFileToDir(cdirnutsDir *dir, cdirnutsFile *file);
 
 cdirnutsDir *allocDir(const char *path);

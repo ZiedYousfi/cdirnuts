@@ -76,6 +76,25 @@ int modifyFileContent(FILE *file, const char *content) {
   return 0;
 }
 
+/**
+ * Adds a subdirectory to a parent directory with transfer-of-ownership
+ * semantics.
+ *
+ * IMPORTANT: This function takes ownership of the child directory structure.
+ * After this function returns successfully, the caller MUST NOT:
+ * - Free the child structure or any of its contents
+ * - Access or modify the child structure
+ * - Pass the child pointer to any other function
+ *
+ * The child's internal pointers (path, subDirs, files) are transferred to the
+ * parent's subDirs array, and the child structure is cleared to prevent
+ * double-free.
+ *
+ * @param parent The parent directory (must not be NULL)
+ * @param child The child directory to add (must not be NULL, ownership is
+ * transferred)
+ * @return 0 on success, -1 on failure
+ */
 int addSubDirToDir(cdirnutsDir *parent, cdirnutsDir *child) {
   if (!parent || !child) {
     log_error("Invalid directory structure.");
@@ -90,12 +109,44 @@ int addSubDirToDir(cdirnutsDir *parent, cdirnutsDir *child) {
   }
 
   parent->subDirs = newSubDirs;
-  parent->subDirs[parent->subDirCount] = *child;
+
+  // Transfer ownership: move child's contents into the new slot
+  parent->subDirs[parent->subDirCount].path = child->path;
+  parent->subDirs[parent->subDirCount].subDirs = child->subDirs;
+  parent->subDirs[parent->subDirCount].subDirCount = child->subDirCount;
+  parent->subDirs[parent->subDirCount].files = child->files;
+  parent->subDirs[parent->subDirCount].fileCount = child->fileCount;
+
   parent->subDirCount++;
+
+  // Clear child's pointers to prevent double-free
+  // Caller must not use or free child after this point
+  child->path = NULL;
+  child->subDirs = NULL;
+  child->subDirCount = 0;
+  child->files = NULL;
+  child->fileCount = 0;
 
   return 0;
 }
 
+/**
+ * Adds a file to a directory with transfer-of-ownership semantics.
+ *
+ * IMPORTANT: This function takes ownership of the file structure.
+ * After this function returns successfully, the caller MUST NOT:
+ * - Free the file structure or any of its contents
+ * - Access or modify the file structure
+ * - Pass the file pointer to any other function
+ *
+ * The file's internal pointers (path, content) are transferred to the
+ * directory's files array, and the file structure is cleared to prevent
+ * double-free.
+ *
+ * @param dir The directory (must not be NULL)
+ * @param file The file to add (must not be NULL, ownership is transferred)
+ * @return 0 on success, -1 on failure
+ */
 int addFileToDir(cdirnutsDir *dir, cdirnutsFile *file) {
   if (!dir || !file) {
     log_error("Invalid directory or file structure.");
@@ -110,8 +161,17 @@ int addFileToDir(cdirnutsDir *dir, cdirnutsFile *file) {
   }
 
   dir->files = newFiles;
-  dir->files[dir->fileCount] = *file;
+
+  // Transfer ownership: move file's contents into the new slot
+  dir->files[dir->fileCount].path = file->path;
+  dir->files[dir->fileCount].content = file->content;
+
   dir->fileCount++;
+
+  // Clear file's pointers to prevent double-free
+  // Caller must not use or free file after this point
+  file->path = NULL;
+  file->content = NULL;
 
   return 0;
 }
