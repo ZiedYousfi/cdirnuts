@@ -1,5 +1,16 @@
 #include "../include/dir.h"
 
+/**
+ * Create a directory at the path stored in `dir` and recursively create its children.
+ *
+ * Recursively creates the directory specified by `dir->path`, then creates each
+ * entry in `dir->subDirs` (as directories) and each entry in `dir->files` (as files).
+ *
+ * @param dir Pointer to a `cdirnutsDir` containing at least `path`. `dir->subDirs`,
+ *            `subDirCount`, `files` and `fileCount` are used if present to create
+ *            nested directories and files.
+ * @returns `0` on success, `-1` on failure (invalid input or a filesystem error).
+ */
 int createDir(cdirnutsDir *dir) {
   if (!dir || !dir->path) {
     log_error("Invalid directory structure.");
@@ -31,6 +42,12 @@ int createDir(cdirnutsDir *dir) {
   return 0;
 }
 
+/**
+ * Create or truncate the file at the path specified by `file->path` and write `file->content` if present.
+ *
+ * @param file Pointer to a `cdirnutsFile`. The `path` field must be a valid, non-NULL filesystem path; the `content` field may be NULL to create an empty file.
+ * @returns 0 on success, -1 on failure (invalid input, unable to open/create the file, or incomplete write).
+ */
 int createFile(cdirnutsFile *file) {
   if (!file || !file->path) {
     log_error("Invalid file structure.");
@@ -58,6 +75,15 @@ int createFile(cdirnutsFile *file) {
   return 0;
 }
 
+/**
+ * Overwrite an open file's contents with the provided string.
+ *
+ * Replaces the file data starting at the beginning of the stream with `content`.
+ *
+ * @param file Open FILE pointer to write to; must be non-NULL and writable.
+ * @param content NUL-terminated string to write into the file; must be non-NULL.
+ * @returns `0` on success, `-1` on error (invalid arguments or if the full content could not be written).
+ */
 int modifyFileContent(FILE *file, const char *content) {
   if (!file || !content) {
     log_error("Invalid file or content.");
