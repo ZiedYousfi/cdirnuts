@@ -73,6 +73,7 @@ int main(int argc, char *argv[]) {
   }
 
   log_info("Hello, World!");
+  init_default_setup(getcwd(NULL, 0), projectName);
 
 cleanup:
   if (pathInfo)
