@@ -29,3 +29,7 @@ int createDir(cdirnutsDir *dir);
 int createFile(cdirnutsFile *file);
 
 int modifyFileContent(FILE *file, const char *content);
+
+int addSubDirToDir(cdirnutsDir *parentDir, cdirnutsDir *subDir);
+
+int addFileToDir(cdirnutsDir *dir, cdirnutsFile *file);
