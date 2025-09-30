@@ -25,16 +25,16 @@ int createDir(cdirnutsDir *dir) {
   return 0;
 }
 
-FILE *createFile(cdirnutsFile *file) {
+int createFile(cdirnutsFile *file) {
   if (!file || !file->path) {
     log_error("Invalid file structure.");
-    return NULL;
+    return -1;
   }
 
   FILE *fp = fopen(file->path, "w");
   if (!fp) {
     log_error("Error creating file %s", file->path);
-    return NULL;
+    return -1;
   }
 
   if (file->content) {
@@ -43,19 +43,19 @@ FILE *createFile(cdirnutsFile *file) {
     if (written < strlen(file->content)) {
       log_error("Error writing to file %s", file->path);
       fclose(fp);
-      return NULL;
+      return -1;
     }
   }
 
   fclose(fp);
   log_info("File %s was successfully created!", file->path);
-  return fopen(file->path, "r+");
+  return 0;
 }
 
-FILE *modifyFileContent(FILE *file, const char *content) {
+int modifyFileContent(FILE *file, const char *content) {
   if (!file || !content) {
     log_error("Invalid file or content.");
-    return NULL;
+    return -1;
   }
 
   rewind(file);
@@ -63,9 +63,9 @@ FILE *modifyFileContent(FILE *file, const char *content) {
   size_t written = fwrite(content, sizeof(char), strlen(content), file);
   if (written < strlen(content)) {
     log_error("Error writing to file");
-    return NULL;
+    return -1;
   }
 
   log_info("File content was successfully modified!");
-  return file;
+  return 0;
 }

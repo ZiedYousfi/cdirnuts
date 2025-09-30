@@ -26,6 +26,6 @@ typedef struct {
 
 int createDir(cdirnutsDir *dir);
 
-FILE *createFile(cdirnutsFile *file);
+int createFile(cdirnutsFile *file);
 
-FILE *modifyFileContent(FILE *file, const char *content);
+int modifyFileContent(FILE *file, const char *content);
