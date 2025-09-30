@@ -11,18 +11,21 @@
 #include "../include/log.h"
 #include "../include/path.h"
 
+// Forward declaration
+typedef struct cdirnutsDir cdirnutsDir;
+
 typedef struct {
   char *path;
   char *content;
 } cdirnutsFile;
 
-typedef struct {
+struct cdirnutsDir {
   char *path;
   size_t subDirCount;
   cdirnutsDir *subDirs;
   cdirnutsFile *files;
   size_t fileCount;
-} cdirnutsDir;
+};
 
 int createDir(cdirnutsDir *dir);
 
