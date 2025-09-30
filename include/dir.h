@@ -37,4 +37,6 @@ int addSubDirToDir(cdirnutsDir *parentDir, cdirnutsDir *subDir);
 
 int addFileToDir(cdirnutsDir *dir, cdirnutsFile *file);
 
+cdirnutsDir *allocDir(const char *path);
+
 int freeDir(cdirnutsDir *dir);

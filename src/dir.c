@@ -15,11 +15,17 @@ int createDir(cdirnutsDir *dir) {
   }
 
   for (size_t i = 0; i < dir->subDirCount; i++) {
-    createDir(&dir->subDirs[i]);
+    if (createDir(&dir->subDirs[i]) != 0) {
+      log_error("Failed to create subdirectory");
+      return -1;
+    }
   }
 
   for (size_t i = 0; i < dir->fileCount; i++) {
-    createFile(&dir->files[i]);
+    if (createFile(&dir->files[i]) != 0) {
+      log_error("Failed to create file");
+      return -1;
+    }
   }
 
   return 0;
@@ -110,6 +116,33 @@ int addFileToDir(cdirnutsDir *dir, cdirnutsFile *file) {
   return 0;
 }
 
+cdirnutsDir *allocDir(const char *path) {
+  if (!path) {
+    log_error("Invalid path.");
+    return NULL;
+  }
+
+  cdirnutsDir *dir = malloc(sizeof(cdirnutsDir));
+  if (!dir) {
+    log_error("Memory allocation failed.");
+    return NULL;
+  }
+
+  dir->path = strdup(path);
+  if (!dir->path) {
+    log_error("Memory allocation for path failed.");
+    free(dir);
+    return NULL;
+  }
+
+  dir->subDirCount = 0;
+  dir->subDirs = NULL;
+  dir->fileCount = 0;
+  dir->files = NULL;
+
+  return dir;
+}
+
 int freeDir(cdirnutsDir *dir) {
   if (!dir) {
     return -1;
@@ -124,8 +157,8 @@ int freeDir(cdirnutsDir *dir) {
     free(dir->files[i].content);
   }
 
-  free(dir->subDirs);
   free(dir->files);
   free(dir);
+  dir = NULL;
   return 0;
 }
