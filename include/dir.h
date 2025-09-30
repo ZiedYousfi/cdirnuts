@@ -41,9 +41,9 @@ int modifyFileContent(FILE *file, const char *content);
 int addSubDirToDir(cdirnutsDir *parentDir, cdirnutsDir *subDir);
 
 /**
- * Adds a file to a directory.
- * IMPORTANT: This function takes ownership of the file parameter.
- * After calling, the caller must NOT free or use the file pointer.
+ * Adds a file to a directory with deep-copy semantics.
+ * The file's path and content are duplicated, and the caller retains
+ * ownership of the original file structure and must free it if needed.
  */
 int addFileToDir(cdirnutsDir *dir, cdirnutsFile *file);
 

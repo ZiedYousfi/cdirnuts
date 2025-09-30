@@ -131,20 +131,17 @@ int addSubDirToDir(cdirnutsDir *parent, cdirnutsDir *child) {
 }
 
 /**
- * Adds a file to a directory with transfer-of-ownership semantics.
+ * Adds a file to a directory with deep-copy semantics.
  *
- * IMPORTANT: This function takes ownership of the file structure.
- * After this function returns successfully, the caller MUST NOT:
- * - Free the file structure or any of its contents
- * - Access or modify the file structure
- * - Pass the file pointer to any other function
+ * This function creates a deep copy of the file structure, including
+ * duplicating the path and content strings. The original file structure and its
+ * contents remain owned by the caller, who is responsible for freeing them.
  *
- * The file's internal pointers (path, content) are transferred to the
- * directory's files array, and the file structure is cleared to prevent
- * double-free.
+ * The directory takes ownership of the copied strings and will free them when
+ * freeDir is called.
  *
  * @param dir The directory (must not be NULL)
- * @param file The file to add (must not be NULL, ownership is transferred)
+ * @param file The file to add (must not be NULL, caller retains ownership)
  * @return 0 on success, -1 on failure
  */
 int addFileToDir(cdirnutsDir *dir, cdirnutsFile *file) {
@@ -162,16 +159,29 @@ int addFileToDir(cdirnutsDir *dir, cdirnutsFile *file) {
 
   dir->files = newFiles;
 
-  // Transfer ownership: move file's contents into the new slot
-  dir->files[dir->fileCount].path = file->path;
-  dir->files[dir->fileCount].content = file->content;
+  // Deep copy: duplicate all string fields
+  if (file->path) {
+    dir->files[dir->fileCount].path = strdup(file->path);
+    if (!dir->files[dir->fileCount].path) {
+      log_error("Failed to duplicate file path.");
+      return -1;
+    }
+  } else {
+    dir->files[dir->fileCount].path = NULL;
+  }
+
+  if (file->content) {
+    dir->files[dir->fileCount].content = strdup(file->content);
+    if (!dir->files[dir->fileCount].content) {
+      log_error("Failed to duplicate file content.");
+      free(dir->files[dir->fileCount].path);
+      return -1;
+    }
+  } else {
+    dir->files[dir->fileCount].content = NULL;
+  }
 
   dir->fileCount++;
-
-  // Clear file's pointers to prevent double-free
-  // Caller must not use or free file after this point
-  file->path = NULL;
-  file->content = NULL;
 
   return 0;
 }
@@ -203,22 +213,53 @@ cdirnutsDir *allocDir(const char *path) {
   return dir;
 }
 
-int freeDir(cdirnutsDir *dir) {
+/**
+ * Helper function to recursively free directory contents without freeing
+ * the directory structure itself. Used for directories embedded in arrays.
+ */
+static void freeDirContents(cdirnutsDir *dir) {
   if (!dir) {
-    return -1;
+    return;
   }
 
+  // Free all subdirectories recursively
   for (size_t i = 0; i < dir->subDirCount; i++) {
-    freeDir(&dir->subDirs[i]);
+    freeDirContents(&dir->subDirs[i]);
   }
 
+  // Free all files (paths and contents are owned via deep-copy)
   for (size_t i = 0; i < dir->fileCount; i++) {
     free(dir->files[i].path);
     free(dir->files[i].content);
   }
 
+  free(dir->subDirs);
   free(dir->files);
+  free(dir->path);
+}
+
+/**
+ * Recursively frees a directory structure and all its contents.
+ *
+ * This function frees:
+ * - All subdirectories (recursively)
+ * - All file paths and contents (owned via deep-copy from addFileToDir)
+ * - The files array
+ * - The directory structure itself
+ *
+ * Note: For subdirectories added via addSubDirToDir (transfer-of-ownership),
+ * their contents are freed as they were transferred to this directory.
+ *
+ * @param dir The directory to free (can be NULL)
+ * @return 0 on success, -1 if dir is NULL
+ */
+int freeDir(cdirnutsDir *dir) {
+  if (!dir) {
+    return -1;
+  }
+
+  freeDirContents(dir);
   free(dir);
-  dir = NULL;
+
   return 0;
 }
