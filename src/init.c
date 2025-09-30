@@ -8,6 +8,10 @@ int init_default_setup(const char *parentDir, const char *projectName) {
   }
 
   int result = 0;
+  cdirnutsDir *projectDir = NULL;
+  cdirnutsDir *srcDir = NULL;
+  cdirnutsDir *includeDir = NULL;
+  cdirnutsDir *testsDir = NULL;
   char *projectPath = NULL;
   char *srcPath = NULL;
   char *includePath = NULL;
@@ -27,11 +31,7 @@ int init_default_setup(const char *parentDir, const char *projectName) {
     return -1;
   }
 
-  cdirnutsDir projectDir = {.path = projectPath,
-                            .subDirCount = 0,
-                            .subDirs = NULL,
-                            .fileCount = 0,
-                            .files = NULL};
+  projectDir = allocDir(projectPath);
 
   srcPath = constructPath("src", projectPath);
   includePath = constructPath("include", projectPath);
@@ -46,27 +46,19 @@ int init_default_setup(const char *parentDir, const char *projectName) {
     return -1;
   }
 
-  cdirnutsDir srcDir = {.path = srcPath,
-                        .subDirCount = 0,
-                        .subDirs = NULL,
-                        .fileCount = 0,
-                        .files = NULL};
+  srcDir = allocDir(srcPath);
+  includeDir = allocDir(includePath);
+  testsDir = allocDir(testsPath);
 
-  cdirnutsDir includeDir = {.path = includePath,
-                            .subDirCount = 0,
-                            .subDirs = NULL,
-                            .fileCount = 0,
-                            .files = NULL};
+  if (!srcDir || !includeDir || !testsDir) {
+    log_error("Failed to allocate subdirectory structures");
+    result = -1;
+    goto cleanup;
+  }
 
-  cdirnutsDir testsDir = {.path = testsPath,
-                          .subDirCount = 0,
-                          .subDirs = NULL,
-                          .fileCount = 0,
-                          .files = NULL};
-
-  if (addSubDirToDir(&projectDir, &srcDir) != 0 ||
-      addSubDirToDir(&projectDir, &includeDir) != 0 ||
-      addSubDirToDir(&projectDir, &testsDir) != 0) {
+  if (addSubDirToDir(projectDir, srcDir) != 0 ||
+      addSubDirToDir(projectDir, includeDir) != 0 ||
+      addSubDirToDir(projectDir, testsDir) != 0) {
     log_error("Failed to add subdirectories to project");
     result = -1;
     goto cleanup;
@@ -90,7 +82,7 @@ int init_default_setup(const char *parentDir, const char *projectName) {
 
   cdirnutsFile readmeFile = {.path = readmePath, .content = readmeContent};
 
-  if (addFileToDir(&projectDir, &readmeFile) != 0) {
+  if (addFileToDir(projectDir, &readmeFile) != 0) {
     log_error("Failed to add README to project");
     result = -1;
     goto cleanup;
@@ -120,7 +112,7 @@ int init_default_setup(const char *parentDir, const char *projectName) {
 
   cdirnutsFile mainFile = {.path = mainPath, .content = mainContent};
 
-  if (addFileToDir(&srcDir, &mainFile) != 0) {
+  if (addFileToDir(srcDir, &mainFile) != 0) {
     log_error("Failed to add main.c to src directory");
     result = -1;
     goto cleanup;
@@ -157,7 +149,7 @@ int init_default_setup(const char *parentDir, const char *projectName) {
   cdirnutsFile gitignoreFile = {.path = gitignorePath,
                                 .content = gitignoreContent};
 
-  if (addFileToDir(&projectDir, &gitignoreFile) != 0) {
+  if (addFileToDir(projectDir, &gitignoreFile) != 0) {
     log_error("Failed to add .gitignore to project");
     result = -1;
     goto cleanup;
@@ -187,15 +179,16 @@ int init_default_setup(const char *parentDir, const char *projectName) {
 
   cdirnutsFile cmakeFile = {.path = cmakePath, .content = cmakeContent};
 
-  if (addFileToDir(&projectDir, &cmakeFile) != 0) {
+  if (addFileToDir(projectDir, &cmakeFile) != 0) {
     log_error("Failed to add CMakeLists.txt to project");
     result = -1;
     goto cleanup;
   }
-
-  result = createDir(&projectDir);
+  result = createDir(projectDir);
 
 cleanup:
+  if (projectDir)
+    freeDir(projectDir);
   if (readmeContent)
     free(readmeContent);
   if (mainContent)
