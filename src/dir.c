@@ -1,84 +1,71 @@
 #include "../include/dir.h"
 
-int createDir(const char *dirName, const char *parentDir) {
-  if (parentDir == NULL) {
-    log_error("Parent directory cannot be NULL.");
-    return -1;
-  }
-  if (dirName == NULL) {
-    log_error("Directory name cannot be NULL.");
+int createDir(cdirnutsDir *dir) {
+  if (!dir || !dir->path) {
+    log_error("Invalid directory structure.");
     return -1;
   }
 
-  char *fullPath = constructPath(dirName, parentDir);
-  if (fullPath == NULL) {
-    log_error("Failed to construct the full path.");
-    return -1;
-  }
-
-  int statut = mkdir(fullPath, 0755);
-  if (statut == 0) {
-    log_info("Directory %s was successfully created in %s!", dirName,
-             parentDir);
+  int status = mkdir(dir->path, 0755);
+  if (status == 0) {
+    log_info("Directory %s was successfully created!", dir->path);
   } else {
-    log_error("Error creating directory");
-    log_error("Error code: %d", statut);
-    free(fullPath);
+    log_error("Error creating directory %s", dir->path);
     return -1;
   }
 
-  free(fullPath);
+  for (size_t i = 0; i < dir->subDirCount; i++) {
+    createDir(&dir->subDirs[i]);
+  }
+
+  for (size_t i = 0; i < dir->fileCount; i++) {
+    createFile(&dir->files[i]);
+  }
+
   return 0;
 }
 
-FILE *createFile(const char *fileName, const char *parentDir) {
-  if (fileName == NULL || parentDir == NULL) {
-    log_error("File name or parent directory is NULL.");
+FILE *createFile(cdirnutsFile *file) {
+  if (!file || !file->path) {
+    log_error("Invalid file structure.");
     return NULL;
   }
 
-  FILE *newFile = NULL;
-  char *filePath = constructPath(fileName, parentDir);
-
-  log_info("Creating file %s in %s", fileName, parentDir);
-
-  newFile = fopen(filePath, "w");
-  if (newFile == NULL) {
-    log_error("Failed to create file %s in %s", fileName, parentDir);
-    goto cleanup;
-  }
-
-  log_info("File %s was successfully created in %s!", fileName, parentDir);
-  if (fputs("// This is a generated file by cdirnuts.\n", newFile) == EOF) {
-    log_error("Failed to write to file %s", fileName);
-    goto cleanup;
-  }
-
-cleanup:
-  free(filePath);
-  if (newFile) {
-    fclose(newFile);
+  FILE *fp = fopen(file->path, "w");
+  if (!fp) {
+    log_error("Error creating file %s", file->path);
     return NULL;
   }
 
-  return newFile;
+  if (file->content) {
+    size_t written =
+        fwrite(file->content, sizeof(char), strlen(file->content), fp);
+    if (written < strlen(file->content)) {
+      log_error("Error writing to file %s", file->path);
+      fclose(fp);
+      return NULL;
+    }
+  }
+
+  fclose(fp);
+  log_info("File %s was successfully created!", file->path);
+  return fopen(file->path, "r+");
 }
 
 FILE *modifyFileContent(FILE *file, const char *content) {
-  if (file == NULL || content == NULL) {
-    log_error("File pointer or content is NULL.");
+  if (!file || !content) {
+    log_error("Invalid file or content.");
     return NULL;
   }
+
   rewind(file);
 
-  if (fputs(content, file) == EOF) {
-    log_error("Failed to write to file.");
-    return NULL;
-  }
-  if (fflush(file) != 0 || ftruncate(fileno(file), ftell(file)) != 0) {
-    log_error("Failed to flush or truncate the file.");
+  size_t written = fwrite(content, sizeof(char), strlen(content), file);
+  if (written < strlen(content)) {
+    log_error("Error writing to file");
     return NULL;
   }
 
+  log_info("File content was successfully modified!");
   return file;
 }
