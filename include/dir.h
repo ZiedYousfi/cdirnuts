@@ -11,32 +11,42 @@
 #include "../include/log.h"
 #include "../include/path.h"
 
-/**
- * @brief Creates a directory with the specified name in the given parent
- * directory.
- *
- * @param dirName The name of the directory to create.
- * @param parentDir The path of the parent directory where the new directory
- * will be created.
- * @return 0 on success, -1 on failure.
- */
-int createDir(const char *dirName, const char *parentDir);
+// Forward declaration
+typedef struct cdirnutsDir cdirnutsDir;
+
+typedef struct {
+  char *path;
+  char *content;
+} cdirnutsFile;
+
+struct cdirnutsDir {
+  char *path;
+  size_t subDirCount;
+  cdirnutsDir *subDirs;
+  cdirnutsFile *files;
+  size_t fileCount;
+};
+
+int createDir(cdirnutsDir *dir);
+
+int createFile(cdirnutsFile *file);
+
+int modifyFileContent(FILE *file, const char *content);
 
 /**
- * @brief Creates a file with the specified name in the given parent directory.
- *
- * @param fileName The name of the file to create.
- * @param parentDir The path of the parent directory where the new file will be
- * created.
- * @return A pointer to the created file, or NULL on failure.
+ * Adds a subdirectory to a parent directory.
+ * IMPORTANT: This function takes ownership of the subDir parameter.
+ * After calling, the caller must NOT free or use the subDir pointer.
  */
-FILE *createFile(const char *fileName, const char *parentDir);
+int addSubDirToDir(cdirnutsDir *parentDir, cdirnutsDir *subDir);
 
 /**
- * @brief Modifies the content of a file by writing the specified content to it.
- *
- * @param filePath The path of the file to modify.
- * @param content The content to write to the file.
- * @return A pointer to the modified file, or NULL on failure.
+ * Adds a file to a directory with deep-copy semantics.
+ * The file's path and content are duplicated, and the caller retains
+ * ownership of the original file structure and must free it if needed.
  */
-FILE *modifyFileContent(FILE *file, const char *content);
+int addFileToDir(cdirnutsDir *dir, cdirnutsFile *file);
+
+cdirnutsDir *allocDir(const char *path);
+
+int freeDir(cdirnutsDir *dir);

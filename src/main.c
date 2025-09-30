@@ -19,6 +19,26 @@ void print_help() {
 
 typedef enum { OPT_HELP, OPT_CONFIG, OPT_PROJECT_NAME } OptType;
 
+/**
+ * Program entry point that parses command-line options, performs default
+ * initialization, and returns an exit status.
+ *
+ * Supported options:
+ * - --help: prints usage and exits.
+ * - --config <file>: loads configuration from <file>; if the file argument is
+ * missing or begins with "--", the program logs an error and exits with
+ * status 1. A single non-option argument is treated as the project name; if
+ * none is provided, PROJECT_NAME is used.
+ *
+ * After parsing, the program logs a greeting and calls
+ * init_default_setup(getcwd(NULL, 0), projectName) before performing cleanup.
+ *
+ * @param argc Number of command-line arguments.
+ * @param argv Array of command-line argument strings.
+ * @returns 0 on success, 1 if a required --config filename is missing or
+ * invalid.
+ */
+
 int main(int argc, char *argv[]) {
   int result = 0;
   bool shouldFreeProjectName = false;
@@ -73,6 +93,7 @@ int main(int argc, char *argv[]) {
   }
 
   log_info("Hello, World!");
+  init_default_setup(getcwd(NULL, 0), projectName);
 
 cleanup:
   if (pathInfo)
