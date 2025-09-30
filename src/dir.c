@@ -72,6 +72,13 @@ int modifyFileContent(FILE *file, const char *content) {
     return -1;
   }
 
+  fflush(file);
+  int fd = fileno(file);
+  if (fd == -1 || ftruncate(fd, (off_t)written) != 0) {
+    log_error("Failed to truncate file");
+    return -1;
+  }
+
   log_info("File content was successfully modified!");
   return 0;
 }

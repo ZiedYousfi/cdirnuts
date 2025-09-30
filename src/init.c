@@ -7,6 +7,11 @@ int init_default_setup(const char *parentDir, const char *projectName) {
     return -1;
   }
 
+  if (strlen(projectName) > 100) {
+    log_error("projectName is too long (max 100 characters)");
+    return -1;
+  }
+
   int result = 0;
   cdirnutsDir *projectDir = NULL;
   cdirnutsDir *srcDir = NULL;
@@ -28,7 +33,8 @@ int init_default_setup(const char *parentDir, const char *projectName) {
   projectPath = constructPath(projectName, parentDir);
   if (!projectPath) {
     log_error("Failed to construct project path");
-    return -1;
+    result = -1;
+    goto cleanup;
   }
 
   projectDir = allocDir(projectPath);
@@ -39,11 +45,8 @@ int init_default_setup(const char *parentDir, const char *projectName) {
 
   if (!srcPath || !includePath || !testsPath) {
     log_error("Failed to construct subdirectory paths");
-    free(projectPath);
-    free(srcPath);
-    free(includePath);
-    free(testsPath);
-    return -1;
+    result = -1;
+    goto cleanup;
   }
 
   srcDir = allocDir(srcPath);
