@@ -69,3 +69,43 @@ int modifyFileContent(FILE *file, const char *content) {
   log_info("File content was successfully modified!");
   return 0;
 }
+
+int addDirToDir(cdirnutsDir *parent, cdirnutsDir *child) {
+  if (!parent || !child) {
+    log_error("Invalid directory structure.");
+    return -1;
+  }
+
+  cdirnutsDir *newSubDirs =
+      realloc(parent->subDirs, (parent->subDirCount + 1) * sizeof(cdirnutsDir));
+  if (!newSubDirs) {
+    log_error("Memory allocation failed.");
+    return -1;
+  }
+
+  parent->subDirs = newSubDirs;
+  parent->subDirs[parent->subDirCount] = *child;
+  parent->subDirCount++;
+
+  return 0;
+}
+
+int addFileToDir(cdirnutsDir *dir, cdirnutsFile *file) {
+  if (!dir || !file) {
+    log_error("Invalid directory or file structure.");
+    return -1;
+  }
+
+  cdirnutsFile *newFiles =
+      realloc(dir->files, (dir->fileCount + 1) * sizeof(cdirnutsFile));
+  if (!newFiles) {
+    log_error("Memory allocation failed.");
+    return -1;
+  }
+
+  dir->files = newFiles;
+  dir->files[dir->fileCount] = *file;
+  dir->fileCount++;
+
+  return 0;
+}
