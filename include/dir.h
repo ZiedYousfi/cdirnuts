@@ -36,3 +36,5 @@ int modifyFileContent(FILE *file, const char *content);
 int addSubDirToDir(cdirnutsDir *parentDir, cdirnutsDir *subDir);
 
 int addFileToDir(cdirnutsDir *dir, cdirnutsFile *file);
+
+int freeDir(cdirnutsDir *dir);

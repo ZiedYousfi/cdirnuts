@@ -109,3 +109,23 @@ int addFileToDir(cdirnutsDir *dir, cdirnutsFile *file) {
 
   return 0;
 }
+
+int freeDir(cdirnutsDir *dir) {
+  if (!dir) {
+    return -1;
+  }
+
+  for (size_t i = 0; i < dir->subDirCount; i++) {
+    freeDir(&dir->subDirs[i]);
+  }
+
+  for (size_t i = 0; i < dir->fileCount; i++) {
+    free(dir->files[i].path);
+    free(dir->files[i].content);
+  }
+
+  free(dir->subDirs);
+  free(dir->files);
+  free(dir);
+  return 0;
+}
