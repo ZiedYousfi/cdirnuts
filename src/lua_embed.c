@@ -1,6 +1,6 @@
 #include "../include/lua_embed.h"
 
-static void run_lua_smoke_test(void) {
+void run_lua_smoke_test(void) {
   lua_State *L = luaL_newstate();
   if (!L) {
     fprintf(stderr, "Failed to create Lua state\n");
@@ -8,9 +8,8 @@ static void run_lua_smoke_test(void) {
   }
   luaL_openlibs(L);
 
-  const char *script =
-      "print('Lua OK: 2+3=', 2+3)\n"
-      "function add(a,b) return a+b end";
+  const char *script = "print('Lua OK: 2+3=', 2+3)\n"
+                       "function add(a,b) return a+b end";
 
   if (luaL_dostring(L, script) != LUA_OK) {
     fprintf(stderr, "Lua error: %s\n", lua_tostring(L, -1));

@@ -1,9 +1,9 @@
 #pragma once
 
+#include <lauxlib.h>
+#include <lua.h>
+#include <lualib.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <lua.h>
-#include <lauxlib.h>
-#include <lualib.h>
 
-static void run_lua_smoke_test(void);
+void run_lua_smoke_test(void);
