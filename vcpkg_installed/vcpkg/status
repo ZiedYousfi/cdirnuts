@@ -1,0 +1,23 @@
+Package: vcpkg-cmake-config
+Version: 2024-05-23
+Architecture: arm64-osx
+Multi-Arch: same
+Abi: 45ab816e7b333644605a8aa7e2fd4023d048e444fd61e97e3f2315ee357989e6
+Status: install ok installed
+
+Package: vcpkg-cmake
+Version: 2024-04-23
+Architecture: arm64-osx
+Multi-Arch: same
+Abi: e84a13c48a63869a5f1f1b3146a08734a3186f86818e12510a9237fece3bd2c6
+Status: install ok installed
+
+Package: lua
+Version: 5.4.8
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: arm64-osx
+Multi-Arch: same
+Abi: db02a306fdc38a316296c7a0ec526db3b1c5b814ed64d02971a492a45b9afae4
+Description: A powerful, fast, lightweight, embeddable scripting language
+Status: install ok installed
+
