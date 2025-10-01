@@ -88,12 +88,11 @@ int main(int argc, char *argv[]) {
         goto cleanup;
       }
     }
-
-  cleanup:
-    if (pathInfo)
-      free(pathInfo);
-    if (strcasecmp(projectName, PROJECT_NAME) != 0)
-      free(projectName);
-    return result;
   }
+cleanup:
+  if (pathInfo)
+    free(pathInfo);
+  if (strcasecmp(projectName, PROJECT_NAME) != 0)
+    free(projectName);
+  return result;
 }
