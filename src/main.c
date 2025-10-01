@@ -19,7 +19,7 @@ void print_help() {
   printf("If no project name is provided, 'my_project' will be used.\n");
 }
 
-typedef enum { OPT_HELP, OPT_CONFIG, OPT_LUA, OPT_PROJECT_NAME } OptType;
+typedef enum { OPT_HELP, OPT_CONFIG, OPT_PROJECT_NAME } OptType;
 
 /**
  * Program entry point that parses command-line options, performs default
@@ -54,8 +54,6 @@ int main(int argc, char *argv[]) {
         opt_type = OPT_HELP;
       } else if (strcmp(argv[i], "--config") == 0) {
         opt_type = OPT_CONFIG;
-      } else if (strcmp(argv[i], "--lua") == 0) {
-        opt_type = OPT_LUA;
       } else {
         opt_type = OPT_PROJECT_NAME;
       }
@@ -66,7 +64,7 @@ int main(int argc, char *argv[]) {
         result = 0;
         goto cleanup;
 
-      case OPT_CONFIG: {
+      case OPT_CONFIG:
         if (i + 1 >= argc) {
           log_error("Error: --config option requires a file argument.");
           result = 1;
@@ -90,12 +88,13 @@ int main(int argc, char *argv[]) {
 
         result = 0;
         goto cleanup;
-      }
+
+      case OPT_PROJECT_NAME:
+        projectName = argv[i];
+        result = init_default_setup(getcwd(NULL, 0), projectName);
+        goto cleanup;
       }
     }
-
-    log_info("Hello, World!");
-    init_default_setup(getcwd(NULL, 0), projectName);
 
   cleanup:
     if (pathInfo)
@@ -104,3 +103,4 @@ int main(int argc, char *argv[]) {
       free(projectName);
     return result;
   }
+}
