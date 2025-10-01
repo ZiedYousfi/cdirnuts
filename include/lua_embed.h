@@ -25,3 +25,9 @@ void register_cdirnuts_lua_api(lua_State *L);
  * @return 0 on success, -1 on failure.
  */
 int execute_lua_script(const char *scriptPath);
+
+// Lua utility functions
+
+char *promptUserInput(const char *prompt);
+
+char *getCWD(void);
