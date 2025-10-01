@@ -76,40 +76,6 @@ int createFile(cdirnutsFile *file) {
 }
 
 /**
- * Overwrite an open file's contents with the provided string.
- *
- * Replaces the file data starting at the beginning of the stream with `content`.
- *
- * @param file Open FILE pointer to write to; must be non-NULL and writable.
- * @param content NUL-terminated string to write into the file; must be non-NULL.
- * @returns `0` on success, `-1` on error (invalid arguments or if the full content could not be written).
- */
-int modifyFileContent(FILE *file, const char *content) {
-  if (!file || !content) {
-    log_error("Invalid file or content.");
-    return -1;
-  }
-
-  rewind(file);
-
-  size_t written = fwrite(content, sizeof(char), strlen(content), file);
-  if (written < strlen(content)) {
-    log_error("Error writing to file");
-    return -1;
-  }
-
-  fflush(file);
-  int fd = fileno(file);
-  if (fd == -1 || ftruncate(fd, (off_t)written) != 0) {
-    log_error("Failed to truncate file");
-    return -1;
-  }
-
-  log_info("File content was successfully modified!");
-  return 0;
-}
-
-/**
  * Adds a subdirectory to a parent directory with transfer-of-ownership
  * semantics.
  *

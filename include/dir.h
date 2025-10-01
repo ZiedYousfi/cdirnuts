@@ -31,8 +31,6 @@ int createDir(cdirnutsDir *dir);
 
 int createFile(cdirnutsFile *file);
 
-int modifyFileContent(FILE *file, const char *content);
-
 /**
  * Adds a subdirectory to a parent directory.
  * IMPORTANT: This function takes ownership of the subDir parameter.
