@@ -6,3 +6,4 @@
 #include <lauxlib.h>
 #include <lualib.h>
 
+static void run_lua_smoke_test(void);
