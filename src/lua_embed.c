@@ -217,138 +217,6 @@ static int l_freeFile(lua_State *L) {
 }
 
 // ============================================================================
-// Path functions
-// ============================================================================
-
-/**
- * Lua: pathInfo = cdirnuts.parsePath(path)
- * Parses a path string into components.
- */
-static int l_parsePath(lua_State *L) {
-  const char *path = luaL_checkstring(L, 1);
-
-  PathInfo *info = parsePath(path);
-  if (!info) {
-    lua_pushnil(L);
-    lua_pushstring(L, "Failed to parse path");
-    return 2;
-  }
-
-  PathInfo **udata = (PathInfo **)lua_newuserdata(L, sizeof(PathInfo *));
-  *udata = info;
-
-  luaL_getmetatable(L, CDIRNUTS_PATHINFO_MT);
-  lua_setmetatable(L, -2);
-
-  return 1;
-}
-
-/**
- * Lua: fullPath = cdirnuts.constructPath(dirName, parentDir)
- * Constructs a full path.
- */
-static int l_constructPath(lua_State *L) {
-  const char *dirName = luaL_checkstring(L, 1);
-  const char *parentDir = luaL_checkstring(L, 2);
-
-  char *result = constructPath(dirName, parentDir);
-  if (!result) {
-    lua_pushnil(L);
-    lua_pushstring(L, "Failed to construct path");
-    return 2;
-  }
-
-  lua_pushstring(L, result);
-  free(result);
-
-  return 1;
-}
-
-/**
- * Lua: substring = cdirnuts.copySubstring(source, start, end)
- * Copies a substring.
- */
-static int l_copySubstring(lua_State *L) {
-  const char *source = luaL_checkstring(L, 1);
-  int start = luaL_checkinteger(L, 2);
-  int end = luaL_checkinteger(L, 3);
-
-  char *result = copySubstring(source, start, end);
-  if (!result) {
-    lua_pushnil(L);
-    lua_pushstring(L, "Failed to copy substring");
-    return 2;
-  }
-
-  lua_pushstring(L, result);
-  free(result);
-
-  return 1;
-}
-
-/**
- * Garbage collector for PathInfo objects.
- */
-static int l_freePathInfo(lua_State *L) {
-  PathInfo **info = check_pathinfo(L, 1);
-
-  if (*info) {
-    freePathInfo(*info);
-    *info = NULL;
-  }
-
-  return 0;
-}
-
-/**
- * Lua: name = pathInfo:getName()
- * Gets the name from a PathInfo object.
- */
-static int l_pathinfo_getName(lua_State *L) {
-  PathInfo **info = check_pathinfo(L, 1);
-
-  if (!*info || !(*info)->name) {
-    lua_pushnil(L);
-    return 1;
-  }
-
-  lua_pushstring(L, (*info)->name);
-  return 1;
-}
-
-/**
- * Lua: parentPath = pathInfo:getParentPath()
- * Gets the parent path from a PathInfo object.
- */
-static int l_pathinfo_getParentPath(lua_State *L) {
-  PathInfo **info = check_pathinfo(L, 1);
-
-  if (!*info || !(*info)->parentPath) {
-    lua_pushnil(L);
-    return 1;
-  }
-
-  lua_pushstring(L, (*info)->parentPath);
-  return 1;
-}
-
-/**
- * Lua: isDir = pathInfo:isDirectory()
- * Checks if the path is a directory.
- */
-static int l_pathinfo_isDirectory(lua_State *L) {
-  PathInfo **info = check_pathinfo(L, 1);
-
-  if (!*info) {
-    lua_pushboolean(L, 0);
-    return 1;
-  }
-
-  lua_pushboolean(L, (*info)->isDirectory);
-  return 1;
-}
-
-// ============================================================================
 // Config/Command functions
 // ============================================================================
 
@@ -389,31 +257,6 @@ void register_cdirnuts_lua_api(lua_State *L) {
   lua_settable(L, -3);
   lua_pop(L, 1);
 
-  // Create PathInfo metatable with methods
-  luaL_newmetatable(L, CDIRNUTS_PATHINFO_MT);
-  lua_pushstring(L, "__gc");
-  lua_pushcfunction(L, l_freePathInfo);
-  lua_settable(L, -3);
-
-  // PathInfo methods
-  lua_pushstring(L, "__index");
-  lua_newtable(L);
-
-  lua_pushstring(L, "getName");
-  lua_pushcfunction(L, l_pathinfo_getName);
-  lua_settable(L, -3);
-
-  lua_pushstring(L, "getParentPath");
-  lua_pushcfunction(L, l_pathinfo_getParentPath);
-  lua_settable(L, -3);
-
-  lua_pushstring(L, "isDirectory");
-  lua_pushcfunction(L, l_pathinfo_isDirectory);
-  lua_settable(L, -3);
-
-  lua_settable(L, -3);
-  lua_pop(L, 1);
-
   // Create cdirnuts table
   lua_newtable(L);
 
@@ -441,19 +284,6 @@ void register_cdirnuts_lua_api(lua_State *L) {
 
   lua_pushstring(L, "addFileToDir");
   lua_pushcfunction(L, l_addFileToDir);
-  lua_settable(L, -3);
-
-  // Path functions
-  lua_pushstring(L, "parsePath");
-  lua_pushcfunction(L, l_parsePath);
-  lua_settable(L, -3);
-
-  lua_pushstring(L, "constructPath");
-  lua_pushcfunction(L, l_constructPath);
-  lua_settable(L, -3);
-
-  lua_pushstring(L, "copySubstring");
-  lua_pushcfunction(L, l_copySubstring);
   lua_settable(L, -3);
 
   // Command functions

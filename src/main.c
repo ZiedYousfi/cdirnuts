@@ -42,7 +42,6 @@ typedef enum { OPT_HELP, OPT_CONFIG, OPT_LUA, OPT_PROJECT_NAME } OptType;
  */
 
 int main(int argc, char *argv[]) {
-  run_lua_smoke_test();
   int result = 0;
   bool shouldFreeProjectName = false;
   char *projectName = PROJECT_NAME;
@@ -80,28 +79,6 @@ int main(int argc, char *argv[]) {
           goto cleanup;
         }
 
-        const char *configFile = argv[i + 1];
-
-        // Load configuration from the specified file
-        // (Implementation of config loading is not yet done)
-
-        log_info("Loading configuration from %s", configFile);
-        i++;
-        break;
-      }
-      case OPT_LUA: {
-        if (i + 1 >= argc) {
-          log_error("Error: --lua option requires a script file argument.");
-          result = 1;
-          goto cleanup;
-        }
-
-        if (strncmp(argv[i + 1], "--", 2) == 0) {
-          log_error("Error: Invalid Lua script file name.");
-          result = 1;
-          goto cleanup;
-        }
-
         const char *luaScript = argv[i + 1];
         log_info("Executing Lua script: %s", luaScript);
 
@@ -114,21 +91,16 @@ int main(int argc, char *argv[]) {
         result = 0;
         goto cleanup;
       }
-      case OPT_PROJECT_NAME:
-        projectName = argv[i];
-        shouldFreeProjectName = false;
-        break;
       }
     }
+
+    log_info("Hello, World!");
+    init_default_setup(getcwd(NULL, 0), projectName);
+
+  cleanup:
+    if (pathInfo)
+      free(pathInfo);
+    if (shouldFreeProjectName)
+      free(projectName);
+    return result;
   }
-
-  log_info("Hello, World!");
-  init_default_setup(getcwd(NULL, 0), projectName);
-
-cleanup:
-  if (pathInfo)
-    free(pathInfo);
-  if (shouldFreeProjectName)
-    free(projectName);
-  return result;
-}

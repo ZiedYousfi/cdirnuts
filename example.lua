@@ -5,34 +5,7 @@
 
 print("=== cdirnuts Lua API Example ===\n")
 
--- 1. Path utilities demonstration
-print("1. Path Utilities:")
-print("   ----------------")
-
-local testPath = "/home/user/projects/myapp/"
-local pathInfo = cdirnuts.parsePath(testPath)
-
-if pathInfo then
-    print("   Parsing path: " .. testPath)
-    print("   - Name: " .. (pathInfo:getName() or "nil"))
-    print("   - Parent path: " .. (pathInfo:getParentPath() or "nil"))
-    print("   - Is directory: " .. tostring(pathInfo:isDirectory()))
-    print()
-end
-
-local constructedPath = cdirnuts.constructPath("subdir", "/home/user")
-if constructedPath then
-    print("   Constructed path: " .. constructedPath)
-    print()
-end
-
-local substring = cdirnuts.copySubstring("HelloWorld", 0, 4)
-if substring then
-    print("   Substring of 'HelloWorld' [0-4]: " .. substring)
-    print()
-end
-
--- 2. Create a project structure
+-- 1. Create a project structure
 print("2. Creating Project Structure:")
 print("   ---------------------------")
 
@@ -52,7 +25,7 @@ print("   ✓ Allocated include directory")
 local testsDir = cdirnuts.allocDir("./test_project/tests")
 print("   ✓ Allocated tests directory")
 
--- 3. Create files
+-- 2. Create files
 print("\n3. Creating Files:")
 print("   ---------------")
 
@@ -157,7 +130,7 @@ if cmakeFile then
     end
 end
 
--- 4. Add subdirectories to root
+-- 3. Add subdirectories to root
 print("\n4. Building Directory Tree:")
 print("   ------------------------")
 
@@ -188,7 +161,7 @@ else
     os.exit(1)
 end
 
--- 6. Execute a command (optional)
+-- 5. Execute a command (optional)
 print("\n6. Running Commands:")
 print("   -----------------")
 
