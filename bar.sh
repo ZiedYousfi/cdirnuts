@@ -2,9 +2,9 @@
 
 # Use out-of-source CMake build in ./build
 set -e
-mkdir -p build
 cmake -S . -B build
-cmake --build build -- -j
+JOBS=${JOBS:-$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)}
+cmake --build build -- -j${JOBS}
 
 # Run the executable
 ./build/cdirnuts

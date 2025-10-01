@@ -4,6 +4,7 @@
 #include "../include/dir.h"
 #include "../include/init.h"
 #include "../include/log.h"
+#include "../include/lua_embed.h"
 #include "../include/path.h"
 
 #define PROJECT_NAME "my_project"
@@ -12,8 +13,9 @@
 void print_help() {
   printf("Usage: cdirnuts [options] [project_name]\n");
   printf("Options:\n");
-  printf("  --help       Show this help message\n");
-  printf("  --config <file>  Specify a configuration file\n");
+  printf("  --help            Show this help message\n");
+  printf("  --config <file>   Specify a configuration file\n");
+  printf("  --lua <script>    Execute a Lua script with cdirnuts API\n");
   printf("If no project name is provided, 'my_project' will be used.\n");
 }
 
@@ -41,7 +43,6 @@ typedef enum { OPT_HELP, OPT_CONFIG, OPT_PROJECT_NAME } OptType;
 
 int main(int argc, char *argv[]) {
   int result = 0;
-  bool shouldFreeProjectName = false;
   char *projectName = PROJECT_NAME;
   PathInfo *pathInfo = NULL;
 
@@ -62,7 +63,7 @@ int main(int argc, char *argv[]) {
         result = 0;
         goto cleanup;
 
-      case OPT_CONFIG: {
+      case OPT_CONFIG:
         if (i + 1 >= argc) {
           log_error("Error: --config option requires a file argument.");
           result = 1;
@@ -75,30 +76,23 @@ int main(int argc, char *argv[]) {
           goto cleanup;
         }
 
-        const char *configFile = argv[i + 1];
+        const char *luaScript = argv[i + 1];
+        log_info("Executing Lua script: %s", luaScript);
 
-        // Load configuration from the specified file
-        // (Implementation of config loading is not yet done)
+        result = execute_lua_script(luaScript);
+        goto cleanup;
 
-        log_info("Loading configuration from %s", configFile);
-        i++;
-        break;
-      }
       case OPT_PROJECT_NAME:
         projectName = argv[i];
-        shouldFreeProjectName = false;
-        break;
+        result = init_default_setup(getcwd(NULL, 0), projectName);
+        goto cleanup;
       }
     }
   }
-
-  log_info("Hello, World!");
-  init_default_setup(getcwd(NULL, 0), projectName);
-
 cleanup:
   if (pathInfo)
     free(pathInfo);
-  if (shouldFreeProjectName)
+  if (strcasecmp(projectName, PROJECT_NAME) != 0)
     free(projectName);
   return result;
 }
