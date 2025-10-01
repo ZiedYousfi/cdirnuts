@@ -43,7 +43,6 @@ typedef enum { OPT_HELP, OPT_CONFIG, OPT_PROJECT_NAME } OptType;
 
 int main(int argc, char *argv[]) {
   int result = 0;
-  bool shouldFreeProjectName = false;
   char *projectName = PROJECT_NAME;
   PathInfo *pathInfo = NULL;
 
@@ -80,13 +79,7 @@ int main(int argc, char *argv[]) {
         const char *luaScript = argv[i + 1];
         log_info("Executing Lua script: %s", luaScript);
 
-        if (execute_lua_script(luaScript) != 0) {
-          log_error("Failed to execute Lua script");
-          result = 1;
-          goto cleanup;
-        }
-
-        result = 0;
+        result = execute_lua_script(luaScript);
         goto cleanup;
 
       case OPT_PROJECT_NAME:
@@ -99,7 +92,7 @@ int main(int argc, char *argv[]) {
   cleanup:
     if (pathInfo)
       free(pathInfo);
-    if (shouldFreeProjectName)
+    if (strcasecmp(projectName, PROJECT_NAME) != 0)
       free(projectName);
     return result;
   }
