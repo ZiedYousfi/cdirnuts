@@ -4,8 +4,8 @@
 #include "../include/dir.h"
 #include "../include/init.h"
 #include "../include/log.h"
-#include "../include/path.h"
 #include "../include/lua_embed.h"
+#include "../include/path.h"
 
 #define PROJECT_NAME "my_project"
 
@@ -13,12 +13,13 @@
 void print_help() {
   printf("Usage: cdirnuts [options] [project_name]\n");
   printf("Options:\n");
-  printf("  --help       Show this help message\n");
-  printf("  --config <file>  Specify a configuration file\n");
+  printf("  --help            Show this help message\n");
+  printf("  --config <file>   Specify a configuration file\n");
+  printf("  --lua <script>    Execute a Lua script with cdirnuts API\n");
   printf("If no project name is provided, 'my_project' will be used.\n");
 }
 
-typedef enum { OPT_HELP, OPT_CONFIG, OPT_PROJECT_NAME } OptType;
+typedef enum { OPT_HELP, OPT_CONFIG, OPT_LUA, OPT_PROJECT_NAME } OptType;
 
 /**
  * Program entry point that parses command-line options, performs default
@@ -54,6 +55,8 @@ int main(int argc, char *argv[]) {
         opt_type = OPT_HELP;
       } else if (strcmp(argv[i], "--config") == 0) {
         opt_type = OPT_CONFIG;
+      } else if (strcmp(argv[i], "--lua") == 0) {
+        opt_type = OPT_LUA;
       } else {
         opt_type = OPT_PROJECT_NAME;
       }
@@ -85,6 +88,31 @@ int main(int argc, char *argv[]) {
         log_info("Loading configuration from %s", configFile);
         i++;
         break;
+      }
+      case OPT_LUA: {
+        if (i + 1 >= argc) {
+          log_error("Error: --lua option requires a script file argument.");
+          result = 1;
+          goto cleanup;
+        }
+
+        if (strncmp(argv[i + 1], "--", 2) == 0) {
+          log_error("Error: Invalid Lua script file name.");
+          result = 1;
+          goto cleanup;
+        }
+
+        const char *luaScript = argv[i + 1];
+        log_info("Executing Lua script: %s", luaScript);
+
+        if (execute_lua_script(luaScript) != 0) {
+          log_error("Failed to execute Lua script");
+          result = 1;
+          goto cleanup;
+        }
+
+        result = 0;
+        goto cleanup;
       }
       case OPT_PROJECT_NAME:
         projectName = argv[i];
