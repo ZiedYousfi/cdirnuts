@@ -3,17 +3,7 @@ project(cdirnuts C)
 
 set(CMAKE_C_STANDARD 23)
 
-# Trouver Lua via vcpkg (manifeste vcpkg.json contient "lua")
 find_package(Lua REQUIRED)
-
-# Some Lua packages (depending on how vcpkg / system packages are provided)
-# export an imported target (Lua::Lua). The old FindLua module provides
-# variables such as LUA_LIBRARIES and LUA_INCLUDE_DIR. Handle both cases so
-# the project works regardless of how Lua was found.
-set(_USE_LUA_TARGET OFF)
-if(TARGET Lua::Lua)
-  set(_USE_LUA_TARGET ON)
-endif()
 
 add_executable(cdirnuts ${CMAKE_SOURCE_DIR}/src/main.c)
 target_include_directories(cdirnuts PRIVATE ${CMAKE_SOURCE_DIR}/include)
@@ -29,16 +19,9 @@ target_link_libraries(init_impl PRIVATE dir_impl path_impl log_impl)
 target_link_libraries(dir_impl PRIVATE path_impl log_impl)
 target_link_libraries(config_impl PRIVATE log_impl)
 
-# Si seul main.c utilise l'API Lua:
-if(_USE_LUA_TARGET)
-  target_link_libraries(cdirnuts PRIVATE config_impl dir_impl path_impl init_impl log_impl Lua::Lua lua_impl)
-else()
-  target_include_directories(cdirnuts PRIVATE ${LUA_INCLUDE_DIR})
-  target_link_libraries(cdirnuts PRIVATE config_impl dir_impl path_impl init_impl log_impl ${LUA_LIBRARIES})
-endif()
-
-# Si d'autres libs appellent l'API Lua (ex: init_impl):
-# target_link_libraries(init_impl PRIVATE Lua::Lua)
+target_link_libraries(lua_impl PRIVATE Lua::Lua log_impl)
+target_include_directories(cdirnuts PRIVATE ${LUA_INCLUDE_DIR})
+target_link_libraries(cdirnuts PRIVATE config_impl dir_impl path_impl init_impl log_impl lua_impl)
 
 target_compile_options(cdirnuts PRIVATE -Wall -Wextra -Werror -fsanitize=address -g)
 target_link_options(cdirnuts PRIVATE -fsanitize=address)

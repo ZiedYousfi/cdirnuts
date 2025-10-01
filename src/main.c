@@ -5,6 +5,7 @@
 #include "../include/init.h"
 #include "../include/log.h"
 #include "../include/path.h"
+#include "../include/lua_embed.h"
 
 #define PROJECT_NAME "my_project"
 
@@ -40,6 +41,7 @@ typedef enum { OPT_HELP, OPT_CONFIG, OPT_PROJECT_NAME } OptType;
  */
 
 int main(int argc, char *argv[]) {
+  run_lua_smoke_test();
   int result = 0;
   bool shouldFreeProjectName = false;
   char *projectName = PROJECT_NAME;
