@@ -23,6 +23,7 @@ add_library(dir_impl STATIC src/dir.c)
 add_library(path_impl STATIC src/path.c)
 add_library(init_impl STATIC src/init.c)
 add_library(log_impl STATIC src/log.c)
+add_library(lua_impl STATIC src/lua_embed.c)
 
 target_link_libraries(init_impl PRIVATE dir_impl path_impl log_impl)
 target_link_libraries(dir_impl PRIVATE path_impl log_impl)
@@ -30,7 +31,7 @@ target_link_libraries(config_impl PRIVATE log_impl)
 
 # Si seul main.c utilise l'API Lua:
 if(_USE_LUA_TARGET)
-  target_link_libraries(cdirnuts PRIVATE config_impl dir_impl path_impl init_impl log_impl Lua::Lua)
+  target_link_libraries(cdirnuts PRIVATE config_impl dir_impl path_impl init_impl log_impl Lua::Lua lua_impl)
 else()
   target_include_directories(cdirnuts PRIVATE ${LUA_INCLUDE_DIR})
   target_link_libraries(cdirnuts PRIVATE config_impl dir_impl path_impl init_impl log_impl ${LUA_LIBRARIES})
