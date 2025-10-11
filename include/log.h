@@ -11,6 +11,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <time.h>
+#include <stdbool.h>
 
 #define LOG_VERSION "0.1.0"
 
