@@ -61,6 +61,7 @@ int main(int argc, char *argv[]) {
       case OPT_HELP:
         print_help();
         result = 0;
+        free(projectName);
         goto cleanup;
 
       case OPT_CONFIG:
