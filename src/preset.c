@@ -158,3 +158,178 @@ char *toString(Preset preset) {
   sprintf(result, "\"%s\",\"%s\"", preset.name, preset.path);
   return result;
 }
+
+int addPreset(const char *name, const char *path) {
+  if (!name || !path) {
+    return -1;
+  }
+
+  // Load existing presets
+  Preset *presets = getPresets();
+  int count = 0;
+
+  if (presets) {
+    // Count existing presets
+    while (presets[count].name != NULL) {
+      // Check if preset already exists
+      if (strcmp(presets[count].name, name) == 0) {
+        // Free the existing presets
+        for (int i = 0; presets[i].name != NULL; i++) {
+          free(presets[i].name);
+          free(presets[i].path);
+        }
+        free(presets);
+        return -2; // Preset already exists
+      }
+      count++;
+    }
+  }
+
+  // Allocate space for new preset array
+  Preset *newPresets = (Preset *)realloc(presets, (count + 2) * sizeof(Preset));
+  if (!newPresets) {
+    if (presets) {
+      for (int i = 0; i < count; i++) {
+        free(presets[i].name);
+        free(presets[i].path);
+      }
+      free(presets);
+    }
+    return -1;
+  }
+
+  // Add new preset
+  newPresets[count].name = strdup(name);
+  newPresets[count].path = strdup(path);
+  newPresets[count + 1].name = NULL;
+  newPresets[count + 1].path = NULL;
+
+  if (!newPresets[count].name || !newPresets[count].path) {
+    free(newPresets[count].name);
+    free(newPresets[count].path);
+    for (int i = 0; i < count; i++) {
+      free(newPresets[i].name);
+      free(newPresets[i].path);
+    }
+    free(newPresets);
+    return -1;
+  }
+
+  // Save presets
+  int result = savePresets(newPresets, count + 1);
+
+  // Free memory
+  for (int i = 0; i <= count; i++) {
+    free(newPresets[i].name);
+    free(newPresets[i].path);
+  }
+  free(newPresets);
+
+  return result;
+}
+
+int removePreset(const char *name) {
+  if (!name) {
+    return -1;
+  }
+
+  // Load existing presets
+  Preset *presets = getPresets();
+  if (!presets) {
+    return -1; // No presets found
+  }
+
+  int count = 0;
+  int foundIndex = -1;
+
+  // Count presets and find the one to remove
+  while (presets[count].name != NULL) {
+    if (strcmp(presets[count].name, name) == 0) {
+      foundIndex = count;
+    }
+    count++;
+  }
+
+  if (foundIndex == -1) {
+    // Preset not found, free memory and return
+    for (int i = 0; i < count; i++) {
+      free(presets[i].name);
+      free(presets[i].path);
+    }
+    free(presets);
+    return -2; // Preset not found
+  }
+
+  // Create new array without the removed preset
+  Preset *newPresets = NULL;
+  if (count > 1) {
+    newPresets = (Preset *)malloc(count * sizeof(Preset));
+    if (!newPresets) {
+      for (int i = 0; i < count; i++) {
+        free(presets[i].name);
+        free(presets[i].path);
+      }
+      free(presets);
+      return -1;
+    }
+
+    int newIndex = 0;
+    for (int i = 0; i < count; i++) {
+      if (i != foundIndex) {
+        newPresets[newIndex].name = presets[i].name;
+        newPresets[newIndex].path = presets[i].path;
+        newIndex++;
+      } else {
+        free(presets[i].name);
+        free(presets[i].path);
+      }
+    }
+    newPresets[newIndex].name = NULL;
+    newPresets[newIndex].path = NULL;
+  }
+
+  // Save updated presets
+  int result = savePresets(newPresets, count - 1);
+
+  // Free memory
+  if (newPresets) {
+    for (int i = 0; i < count - 1; i++) {
+      free(newPresets[i].name);
+      free(newPresets[i].path);
+    }
+    free(newPresets);
+  }
+  free(presets);
+
+  return result;
+}
+
+void listPresets() {
+  Preset *presets = getPresets();
+
+  if (!presets) {
+    printf("No presets found.\n");
+    return;
+  }
+
+  int count = 0;
+  while (presets[count].name != NULL) {
+    count++;
+  }
+
+  if (count == 0) {
+    printf("No presets found.\n");
+  } else {
+    printf("Available presets:\n");
+    for (int i = 0; i < count; i++) {
+      printf("  %s -> %s\n", presets[i].name, presets[i].path);
+    }
+  }
+
+  // Free memory
+  for (int i = 0; i < count; i++) {
+    free(presets[i].name);
+    free(presets[i].path);
+  }
+  free(presets);
+}

@@ -23,3 +23,6 @@ Preset *getPresets();
 int savePresets(Preset *presets, int count);
 Preset fromString(const char *str);
 char *toString(Preset preset);
+int addPreset(const char *name, const char *path);
+int removePreset(const char *name);
+void listPresets();
