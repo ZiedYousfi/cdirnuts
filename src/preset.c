@@ -145,7 +145,13 @@ Preset fromString(const char *str) {
 }
 
 char *toString(Preset preset) {
-  char *result = (char *)malloc(strlen(preset.name) + strlen(preset.path) + 5);
+  /*
+   * Need space for: opening quote, name, closing quote, comma, opening quote,
+   * path, closing quote and terminating NUL.
+   */
+  size_t name_len = preset.name ? strlen(preset.name) : 0;
+  size_t path_len = preset.path ? strlen(preset.path) : 0;
+  char *result = (char *)malloc(name_len + path_len + 6);
   if (!result) {
     return NULL;
   }
