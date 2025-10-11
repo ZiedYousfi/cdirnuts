@@ -2,39 +2,38 @@
 #include "../include/init.h"
 #include "../include/log.h"
 #include "../include/path.h"
+#include "../include/preset.h"
 
-// int tests(){
+int preset_tests() {
+  Preset fromStringHappy = fromString("\"test\",\"/path/to/test\"");
+  if (strcmp(fromStringHappy.name, "test") != 0) {
+    log_error("fromString happy name test failed, got name: %s",
+              fromStringHappy.name);
+    return 1;
+  }
+  if (strcmp(fromStringHappy.path, "/path/to/test") != 0) {
+    log_error("fromString happy path test failed, got path: %s",
+              fromStringHappy.path);
+    return 1;
+  }
 
-// char pathTest[] = "/home/user/projects/my_project/src/main/";
-//   PathInfo *pathInfo = parsePath(pathTest);
-//   if (pathInfo) {
-//     printf("Parent Path: %s\n", pathInfo->parentPath);
-//     printf("Name: %s\n", pathInfo->name);
-//     printf("Is Directory: %s\n", pathInfo->isDirectory ? "true" : "false");
-//     freePathInfo(pathInfo);
-//   } else {
-//     printf("Failed to parse path.\n");
-//   }
-//   return 0;
+  Preset fromStringEmpty = fromString("");
+  if (fromStringEmpty.name != NULL) {
+    log_error("fromString empty name test failed, got name: %s",
+              fromStringEmpty.name);
+    return 1;
+  }
+  if (fromStringEmpty.path != NULL) {
+    log_error("fromString empty path test failed, got path: %s",
+              fromStringEmpty.path);
+    return 1;
+  }
+}
 
-//   if (createDir("test_dir", ".")) {
-//     printf("Directory created successfully.\n");
-//   } else {
-//     printf("Failed to create directory.\n");
-//   }
-//   FILE *file = createFile("test_file.txt", ".");
-//   if (file) {
-//     printf("File created successfully.\n");
-//     fclose(file);
-//   } else {
-//     printf("Failed to create file.\n");
-//   }
-//   return 0;
+int tests() {
+  if (preset_tests() != 0) {
+    return 1;
+  }
 
-//   if (init_default_setup(".", "my_project") != 0) {
-//     printf("Failed to initialize default setup.\n");
-//     return 1;
-//   }
-//   printf("Default setup initialized successfully.\n");
-//   return 0;
-// }
+  return 0;
+}
