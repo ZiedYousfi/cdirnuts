@@ -19,7 +19,7 @@ void print_help() {
   printf("If no project name is provided, 'my_project' will be used.\n");
 }
 
-typedef enum { OPT_HELP, OPT_CONFIG, OPT_PROJECT_NAME } OptType;
+typedef enum { OPT_HELP, OPT_CONFIG, OPT_PROJECT_NAME, OPT_PRESET } OptType;
 
 /**
  * Program entry point that parses command-line options, performs default
@@ -31,6 +31,8 @@ typedef enum { OPT_HELP, OPT_CONFIG, OPT_PROJECT_NAME } OptType;
  * missing or begins with "--", the program logs an error and exits with
  * status 1. A single non-option argument is treated as the project name; if
  * none is provided, PROJECT_NAME is used.
+ * - --preset <name>: loads a preset configuration by name (not yet
+ * implemented).
  *
  * After parsing, the program logs a greeting and calls
  * init_default_setup(getcwd(NULL, 0), projectName) before performing cleanup.
@@ -41,7 +43,7 @@ typedef enum { OPT_HELP, OPT_CONFIG, OPT_PROJECT_NAME } OptType;
  * invalid.
  */
 
-int main(int argc, char *argv[]) {
+int main(int argc, char **argv) {
   int result = 0;
   char *projectName = PROJECT_NAME;
   PathInfo *pathInfo = NULL;
@@ -53,6 +55,8 @@ int main(int argc, char *argv[]) {
         opt_type = OPT_HELP;
       } else if (strcmp(argv[i], "--config") == 0) {
         opt_type = OPT_CONFIG;
+      } else if (strcmp(argv[i], "--preset") == 0) {
+        opt_type = OPT_PRESET;
       } else {
         opt_type = OPT_PROJECT_NAME;
       }
@@ -86,6 +90,11 @@ int main(int argc, char *argv[]) {
       case OPT_PROJECT_NAME:
         projectName = argv[i];
         result = init_default_setup(getcwd(NULL, 0), projectName);
+        goto cleanup;
+
+      case OPT_PRESET:
+        log_error("Error: --preset option is not yet implemented.");
+        result = 1;
         goto cleanup;
       }
     }
