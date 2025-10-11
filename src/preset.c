@@ -151,7 +151,8 @@ char *toString(Preset preset) {
    */
   size_t name_len = preset.name ? strlen(preset.name) : 0;
   size_t path_len = preset.path ? strlen(preset.path) : 0;
-  char *result = (char *)malloc(name_len + path_len + 6);
+  char *result =
+      (char *)malloc(name_len + path_len + 6); // +6 for quotes, comma, NUL
   if (!result) {
     return NULL;
   }
