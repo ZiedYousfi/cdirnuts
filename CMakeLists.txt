@@ -26,10 +26,12 @@ add_library(path_impl STATIC src/path.c)
 add_library(init_impl STATIC src/init.c)
 add_library(log_impl STATIC src/log.c)
 add_library(lua_impl STATIC src/lua_embed.c)
+add_library(preset_impl STATIC src/preset.c)
 
 target_link_libraries(init_impl PUBLIC dir_impl path_impl log_impl)
 target_link_libraries(dir_impl PUBLIC path_impl log_impl)
 target_link_libraries(config_impl PUBLIC log_impl)
+target_link_libraries(preset_impl PUBLIC log_impl)
 
 if(_USE_LUA_TARGET)
   # lua_impl depends on log_impl and config_impl (executeCommand is in config_impl)
@@ -40,7 +42,7 @@ else()
   target_link_libraries(lua_impl PRIVATE ${LUA_LIBRARIES} log_impl config_impl)
 endif()
 target_include_directories(cdirnuts PRIVATE ${LUA_INCLUDE_DIR})
-target_link_libraries(cdirnuts PRIVATE config_impl init_impl lua_impl)
+target_link_libraries(cdirnuts PRIVATE config_impl init_impl lua_impl preset_impl)
 
 target_compile_options(cdirnuts PRIVATE -Wall -Wextra -Werror -fsanitize=address -g)
 target_link_options(cdirnuts PRIVATE -fsanitize=address)
@@ -51,15 +53,18 @@ set_target_properties(cdirnuts PROPERTIES
 
 option(BUILD_TESTS "Build test executable" OFF)
 if(BUILD_TESTS)
-    add_executable(cdirnuts_test test/tests/test.c)
+    add_executable(cdirnuts_test ${CMAKE_SOURCE_DIR}/tests/test.c)
     target_include_directories(cdirnuts_test PRIVATE ${CMAKE_SOURCE_DIR}/include)
     target_compile_options(cdirnuts_test PRIVATE -Wall -Wextra -Werror -fsanitize=address -g)
     target_link_options(cdirnuts_test PRIVATE -fsanitize=address)
     if(_USE_LUA_TARGET)
-      target_link_libraries(cdirnuts_test PRIVATE Lua::Lua)
+      # Link the project's implementation libraries so tests can resolve
+      # symbols such as fromString, toString, getPresets, savePresets and
+      # the logging functions.
+      target_link_libraries(cdirnuts_test PRIVATE Lua::Lua preset_impl config_impl log_impl dir_impl path_impl)
     else()
       target_include_directories(cdirnuts_test PRIVATE ${LUA_INCLUDE_DIR})
-      target_link_libraries(cdirnuts_test PRIVATE ${LUA_LIBRARIES})
+      target_link_libraries(cdirnuts_test PRIVATE ${LUA_LIBRARIES} preset_impl config_impl log_impl dir_impl path_impl)
     endif()
     set_target_properties(cdirnuts_test PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
     enable_testing()
