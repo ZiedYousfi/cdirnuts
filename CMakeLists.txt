@@ -26,6 +26,7 @@ add_library(path_impl STATIC src/path.c)
 add_library(init_impl STATIC src/init.c)
 add_library(log_impl STATIC src/log.c)
 add_library(lua_impl STATIC src/lua_embed.c)
+add_library(preset_impl STATIC src/preset.c)
 
 target_link_libraries(init_impl PUBLIC dir_impl path_impl log_impl)
 target_link_libraries(dir_impl PUBLIC path_impl log_impl)
@@ -51,7 +52,7 @@ set_target_properties(cdirnuts PROPERTIES
 
 option(BUILD_TESTS "Build test executable" OFF)
 if(BUILD_TESTS)
-    add_executable(cdirnuts_test test/tests/test.c)
+    add_executable(cdirnuts_test ${CMAKE_SOURCE_DIR}/tests/test.c)
     target_include_directories(cdirnuts_test PRIVATE ${CMAKE_SOURCE_DIR}/include)
     target_compile_options(cdirnuts_test PRIVATE -Wall -Wextra -Werror -fsanitize=address -g)
     target_link_options(cdirnuts_test PRIVATE -fsanitize=address)

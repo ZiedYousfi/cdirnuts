@@ -8,6 +8,25 @@
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
       }
+    },
+    {
+      "name": "vcpkg-tests",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "BUILD_TESTS": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "build-tests",
+      "configurePreset": "vcpkg-tests",
+      "description": "Build the tests using the vcpkg toolchain and Ninja",
+      "targets": [
+        "cdirnuts_test"
+      ]
     }
   ]
 }
