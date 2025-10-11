@@ -5,24 +5,39 @@
 
 print("=== cdirnuts Lua API Example ===\n")
 
+local cdirnuts = require("cdirnuts")
+
+-- get the cwd
+local cwd = cdirnuts.getCwd()
+
+-- Ask user for the project name
+print("1. Project Setup:")
+print("   --------------")
+io.write("Enter the project name (default: test_project): ")
+local projectName = io.read()
+if projectName == nil or projectName == "" then
+    projectName = "test_project"
+end
+print("   ✓ Project name set to: " .. projectName)
+
 -- 1. Create a project structure
 print("2. Creating Project Structure:")
 print("   ---------------------------")
 
 -- Create root directory
-local rootDir = cdirnuts.allocDir("./test_project")
-print("   ✓ Allocated root directory: ./test_project")
+local rootDir = cdirnuts.allocDir(cwd .. "/" .. projectName)
+print("   ✓ Allocated root directory: ./" .. projectName)
 
 -- Create src directory
-local srcDir = cdirnuts.allocDir("./test_project/src")
+local srcDir = cdirnuts.allocDir(cwd .. "/" .. projectName .. "/src")
 print("   ✓ Allocated src directory")
 
 -- Create include directory
-local includeDir = cdirnuts.allocDir("./test_project/include")
+local includeDir = cdirnuts.allocDir(cwd .. "/" .. projectName .. "/include")
 print("   ✓ Allocated include directory")
 
 -- Create tests directory
-local testsDir = cdirnuts.allocDir("./test_project/tests")
+local testsDir = cdirnuts.allocDir(cwd .. "/" .. projectName .. "/tests")
 print("   ✓ Allocated tests directory")
 
 -- 2. Create files
@@ -31,8 +46,16 @@ print("   ---------------")
 
 -- Create README.md
 local readmeFile = cdirnuts.createFile(
-    "./test_project/README.md",
-    "# Test Project\n\nThis project was created using the cdirnuts Lua API!\n\n## Features\n- Automatic project scaffolding\n- Lua-based configuration\n- Easy to extend\n"
+    cwd .. "/" .. projectName .. "/README.md",
+    [[# Test Project
+
+    This project was created using the cdirnuts Lua API!
+
+    ## Features
+    - Automatic project scaffolding
+    - Lua-based configuration
+    - Easy to extend
+]]
 )
 if readmeFile then
     print("   ✓ Created README.md file object")
@@ -44,12 +67,12 @@ end
 
 -- Create main.c
 local mainFile = cdirnuts.createFile(
-    "./test_project/src/main.c",
+    cwd .. "/" .. projectName .. "/src/main.c",
     [[#include <stdio.h>
 #include "../include/app.h"
 
-int main(int argc, char *argv[]) {
-    printf("Hello from test_project!\n");
+int main(int argc, char **argv) {
+    printf("Hello from %s!\n", APP_NAME);
     return 0;
 }
 ]]
@@ -64,7 +87,7 @@ end
 
 -- Create header file
 local headerFile = cdirnuts.createFile(
-    "./test_project/include/app.h",
+    cwd .. "/" .. projectName .. "/include/app.h",
     [[#pragma once
 
 #include <stdio.h>
@@ -84,7 +107,7 @@ end
 
 -- Create test file
 local testFile = cdirnuts.createFile(
-    "./test_project/tests/test_main.c",
+    cwd .. "/" .. projectName .. "/tests/test_main.c",
     [[#include <assert.h>
 #include <stdio.h>
 
@@ -110,16 +133,16 @@ end
 
 -- Create CMakeLists.txt
 local cmakeFile = cdirnuts.createFile(
-    "./test_project/CMakeLists.txt",
+    cwd .. "/" .. projectName .. "/CMakeLists.txt",
     [[cmake_minimum_required(VERSION 3.15)
-project(test_project)
+project(]] .. projectName .. [[)
 
 set(CMAKE_C_STANDARD 11)
 
 include_directories(include)
 
-add_executable(test_project src/main.c)
-add_executable(test_main tests/test_main.c)
+add_executable(]] .. projectName .. [[ src/main.c)
+add_executable(]] .. projectName .. [[_tests tests/test_main.c)
 ]]
 )
 if cmakeFile then
