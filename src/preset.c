@@ -27,7 +27,24 @@ static char *valueBetweenQuotes(const char *str, size_t start) {
 }
 
 Preset *getPresets() {
-  FILE *file = fopen("presets.cdndb", "r");
+  char *env_path =
+      getenv("CDIRNUTS_DIR_PATH") ? getenv("CDIRNUTS_DIR_PATH") : ".";
+  if (chdir(env_path) != 0) {
+    log_error("Failed to change directory to %s: %s", env_path,
+              strerror(errno));
+    return NULL;
+  }
+
+  char *pathToFile = malloc(strlen(env_path) + strlen("/presets.cdndb") + 1);
+  if (!pathToFile) {
+    return NULL;
+  }
+  sprintf(pathToFile, "%s/presets.cdndb", env_path);
+
+  FILE *file = fopen(pathToFile, "w");
+
+  free(pathToFile);
+
   if (!file) {
     return NULL;
   }
@@ -55,7 +72,6 @@ Preset *getPresets() {
       }
       presets = newPresets;
       presets[count] = preset;
-      // maintain a NULL sentinel for easier counting by callers
       presets[count + 1].name = NULL;
       presets[count + 1].path = NULL;
       count++;
@@ -67,7 +83,23 @@ Preset *getPresets() {
 }
 
 int savePresets(Preset *presets, int count) {
-  FILE *file = fopen("presets.cdndb", "w");
+  char *env_path =
+      getenv("CDIRNUTS_DIR_PATH") ? getenv("CDIRNUTS_DIR_PATH") : ".";
+  if (chdir(env_path) != 0) {
+    log_error("Failed to change directory to %s: %s", env_path,
+              strerror(errno));
+    return -1;
+  }
+
+  char *pathToFile = malloc(strlen(env_path) + strlen("/presets.cdndb") + 1);
+  if (!pathToFile) {
+    return -1;
+  }
+  sprintf(pathToFile, "%s/presets.cdndb", env_path);
+
+  FILE *file = fopen(pathToFile, "w");
+
+  free(pathToFile);
 
   if (!file) {
     return -1;
