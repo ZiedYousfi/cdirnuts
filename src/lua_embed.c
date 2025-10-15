@@ -385,6 +385,33 @@ int execute_lua_script(const char *scriptPath) {
   return 0;
 }
 
+int execute_lua_string(const char *luaCode) {
+  if (!luaCode) {
+    log_error("Lua code string is NULL");
+    return -1;
+  }
+
+  lua_State *L = luaL_newstate();
+  if (!L) {
+    log_error("Failed to create Lua state");
+    return -1;
+  }
+
+  luaL_openlibs(L);
+  register_cdirnuts_lua_api(L);
+
+  if (luaL_dostring(L, luaCode) != LUA_OK) {
+    log_error("Lua error: %s", lua_tostring(L, -1));
+    lua_pop(L, 1);
+    lua_close(L);
+    return -1;
+  }
+
+  lua_close(L);
+  log_info("Successfully executed Lua code from string");
+  return 0;
+}
+
 void run_lua_smoke_test(void) {
   lua_State *L = luaL_newstate();
   if (!L) {

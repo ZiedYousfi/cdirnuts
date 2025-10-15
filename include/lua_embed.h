@@ -26,6 +26,14 @@ void register_cdirnuts_lua_api(lua_State *L);
  */
 int execute_lua_script(const char *scriptPath);
 
+/**
+ * @brief Executes Lua code from a string with the cdirnuts API available.
+ *
+ * @param luaCode The Lua code to execute as a string.
+ * @return 0 on success, -1 on failure.
+ */
+int execute_lua_string(const char *luaCode);
+
 // Lua utility functions
 
 char *promptUserInput(const char *prompt);

@@ -5,10 +5,11 @@
 
 print("=== cdirnuts Lua API Example ===\n")
 
-local cdirnuts = require("cdirnuts")
+-- The cdirnuts API is already registered globally when embedded
+-- No need to require it
 
 -- get the cwd
-local cwd = cdirnuts.getCwd()
+local cwd = cdirnuts.getCWD()
 
 -- Ask user for the project name
 print("1. Project Setup:")
