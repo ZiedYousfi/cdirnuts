@@ -195,7 +195,7 @@ int main(int argc, char **argv) {
 cleanup:
   if (pathInfo)
     free(pathInfo);
-  if (strcasecmp(projectName, PROJECT_NAME) != 0)
-    free(projectName);
+  // Note: projectName points to either PROJECT_NAME constant or argv[i]
+  // Neither should be freed
   return result;
 }
