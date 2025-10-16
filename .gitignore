@@ -1044,10 +1044,12 @@ dkms.conf
 # Raspberry Pi Pico disassembler file
 *.dis
 
+# vcpkg installed files
 vcpkg_installed
-*.cdndb
 
 # GitHub Actions workflows should not be ignored
 !.github/
 !.github/workflows/
 !.github/workflows/**
+
+*.cdndb
