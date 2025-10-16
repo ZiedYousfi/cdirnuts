@@ -58,11 +58,8 @@ cmake --build build
 ### Basic Usage
 
 ```bash
-# Create a new C project with default name "my_project"
+# Create a new C project using the default_init.lua script
 ./build/cdirnuts
-
-# Create a new C project with custom name
-./build/cdirnuts my-awesome-project
 
 # Show help
 ./build/cdirnuts --help
@@ -73,7 +70,6 @@ cmake --build build
 Execute Lua scripts to create custom project structures:
 
 ```bash
-# Or using --config (legacy alias for --lua)
 ./build/cdirnuts --config my_template.lua
 ```
 
@@ -95,31 +91,7 @@ Save and reuse project templates:
 ./build/cdirnuts --preset remove my_template
 ```
 
-Presets are stored in `~/.cdndb` and allow you to quickly generate projects from your favorite templates.
-
-## Default Project Structure
-
-When running `./build/cdirnuts` without arguments, it creates:
-
-```text
-my_project/
-├── src/
-│   └── main.c          # Basic "Hello, World!" program
-├── include/            # Header files directory
-├── Makefile           # Build configuration
-├── README.md          # Project documentation
-├── .gitignore         # Git ignore rules
-└── LICENSE            # License file
-```
-
-### File Descriptions
-
-- **src/main.c**: A basic C program with "Hello, World!" output
-- **include/**: Directory for header files (.h)
-- **Makefile**: Build script with gcc configuration (C17 standard)
-- **README.md**: Project documentation template
-- **.gitignore**: Ignores build artifacts (`*.o`, `*.exe`, `*.out`, `build/`, `*.log`)
-- **LICENSE**: Empty license file for your project
+Presets are stored in the path specified by the `CDIRNUTS_DIR_PATH` environment variable or default to `./`.
 
 ## Lua API
 
@@ -129,7 +101,6 @@ CDirNuts provides a comprehensive Lua API for creating custom project structures
 
 ```lua
 -- Create a simple project with custom structure
-local cdirnuts = require("cdirnuts")
 
 -- Allocate directories
 local project = cdirnuts.allocDir("./my_app")
@@ -155,9 +126,9 @@ cdirnuts.createDir(project)
 - **File Operations**: `createFile()`, `writeFile()`, `addFileToDir()`
 - **Path Utilities**: `parsePath()`, `constructPath()`, `copySubstring()`
 - **Command Execution**: `executeCommand()`
-- **User Interaction**: `promptUserInput()`, `getCwd()`
+- **User Interaction**: `getCwd()`
 
-See `example.lua` in the repository for a complete working example.
+See `default_init.lua` in the repository for a complete working example.
 
 ## Command Line Options
 
@@ -167,25 +138,24 @@ See `example.lua` in the repository for a complete working example.
 - `--preset add <name> <path>`: Add a new preset
 - `--preset remove <name>`: Remove a preset
 - `--preset <name>`: Use a saved preset
-- `[project_name]`: Create default project with custom name
 
 ## Examples
 
 ### Example 1: Basic Default Project
 
 ```bash
-./build/cdirnuts my_new_project
+./build/cdirnuts
 ```
 
-Creates a standard C project structure in `./my_new_project/`.
+Creates a standard C project structure using the built-in `default_init.lua` script.
 
 ### Example 2: Using Lua Script
 
 ```bash
-./build/cdirnuts --lua example.lua
+./build/cdirnuts --config default_init.lua
 ```
 
-Runs the provided `example.lua` script to create a custom project with:
+Runs the provided `default_init.lua` script to create a custom project with:
 
 - Interactive project name prompt
 - Multiple directories (src, include, tests)
@@ -197,7 +167,6 @@ Runs the provided `example.lua` script to create a custom project with:
 ```bash
 # Create a custom Lua template
 cat > my_template.lua << 'EOF'
-local cdirnuts = require("cdirnuts")
 local project = cdirnuts.allocDir("./microservice")
 -- ... add your custom structure
 cdirnuts.createDir(project)
