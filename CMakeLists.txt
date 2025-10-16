@@ -58,8 +58,13 @@ endif()
 target_include_directories(cdirnuts PRIVATE ${LUA_INCLUDE_DIR})
 target_link_libraries(cdirnuts PRIVATE config_impl init_impl lua_impl preset_impl)
 
-target_compile_options(cdirnuts PRIVATE -Wall -Wextra -Werror -fsanitize=address -g)
-target_link_options(cdirnuts PRIVATE -fsanitize=address)
+target_compile_options(cdirnuts PRIVATE)
+if(DEBUG_FLAG)
+  if(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
+    target_compile_options(cdirnuts PRIVATE -Werror -Wall -Wextra -g -fsanitize=address)
+    target_link_options(cdirnuts PRIVATE -fsanitize=address)
+  endif()
+endif()
 
 set_target_properties(cdirnuts PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build
