@@ -6,6 +6,21 @@ int executeCommand(const char *command) {
     return -1;
   }
 
+  printf("About to execute command: %s\n", command);
+  printf("Are you sure? (y/n): ");
+  fflush(stdout);
+  char confirmation = getchar();
+
+  if (confirmation == EOF) {
+    log_error("Failed to read confirmation");
+    return -1;
+  }
+
+  if (confirmation != 'y' && confirmation != 'Y') {
+    log_info("Command '%s' not confirmed", command);
+    return -1;
+  }
+
   int result = system(command);
   if (result == -1) {
     log_error("Failed to execute command: %s", command);
