@@ -1,15 +1,18 @@
 #include "../include/dir.h"
 
 /**
- * Create a directory at the path stored in `dir` and recursively create its children.
+ * Create a directory at the path stored in `dir` and recursively create its
+ * children.
  *
  * Recursively creates the directory specified by `dir->path`, then creates each
- * entry in `dir->subDirs` (as directories) and each entry in `dir->files` (as files).
+ * entry in `dir->subDirs` (as directories) and each entry in `dir->files` (as
+ * files).
  *
- * @param dir Pointer to a `cdirnutsDir` containing at least `path`. `dir->subDirs`,
- *            `subDirCount`, `files` and `fileCount` are used if present to create
- *            nested directories and files.
- * @returns `0` on success, `-1` on failure (invalid input or a filesystem error).
+ * @param dir Pointer to a `cdirnutsDir` containing at least `path`.
+ * `dir->subDirs`, `subDirCount`, `files` and `fileCount` are used if present to
+ * create nested directories and files.
+ * @returns `0` on success, `-1` on failure (invalid input or a filesystem
+ * error).
  */
 int createDir(cdirnutsDir *dir) {
   if (!dir || !dir->path) {
@@ -17,7 +20,11 @@ int createDir(cdirnutsDir *dir) {
     return -1;
   }
 
+#ifdef _WIN32
+  int status = mkdir(dir->path);
+#else
   int status = mkdir(dir->path, 0755);
+#endif
   if (status == 0) {
     log_info("Directory %s was successfully created!", dir->path);
   } else {
@@ -43,10 +50,14 @@ int createDir(cdirnutsDir *dir) {
 }
 
 /**
- * Create or truncate the file at the path specified by `file->path` and write `file->content` if present.
+ * Create or truncate the file at the path specified by `file->path` and write
+ * `file->content` if present.
  *
- * @param file Pointer to a `cdirnutsFile`. The `path` field must be a valid, non-NULL filesystem path; the `content` field may be NULL to create an empty file.
- * @returns 0 on success, -1 on failure (invalid input, unable to open/create the file, or incomplete write).
+ * @param file Pointer to a `cdirnutsFile`. The `path` field must be a valid,
+ * non-NULL filesystem path; the `content` field may be NULL to create an empty
+ * file.
+ * @returns 0 on success, -1 on failure (invalid input, unable to open/create
+ * the file, or incomplete write).
  */
 int createFile(cdirnutsFile *file) {
   if (!file || !file->path) {
