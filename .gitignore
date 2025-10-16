@@ -1046,3 +1046,8 @@ dkms.conf
 
 vcpkg_installed
 *.cdndb
+
+# GitHub Actions workflows should not be ignored
+!.github/
+!.github/workflows/
+!.github/workflows/**
