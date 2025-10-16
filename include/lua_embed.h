@@ -36,6 +36,4 @@ int execute_lua_string(const char *luaCode);
 
 // Lua utility functions
 
-char *promptUserInput(const char *prompt);
-
 char *getCWD(void);

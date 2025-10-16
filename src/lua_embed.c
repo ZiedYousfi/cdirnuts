@@ -28,28 +28,6 @@ static PathInfo **check_pathinfo(lua_State *L, int index) {
 // ============================================================================
 // Utility functions
 // ============================================================================
-
-char *promptUserInput(const char *prompt) {
-  if (prompt) {
-    printf("%s", prompt);
-    fflush(stdout);
-  }
-
-  size_t size = 0;
-  char *line = NULL;
-  ssize_t len = getline(&line, &size, stdin);
-  if (len == -1) {
-    free(line);
-    return NULL;
-  }
-
-  if (len > 0 && line[len - 1] == '\n') {
-    line[len - 1] = '\0';
-  }
-
-  return line;
-}
-
 char *getCWD(void) { return getcwd(NULL, 0); }
 
 static int l_getCWD(lua_State *L) {
@@ -64,21 +42,6 @@ static int l_getCWD(lua_State *L) {
   }
   return 1;
 }
-
-static int l_promptUserInput(lua_State *L) {
-  const char *prompt = luaL_optstring(L, 1, NULL);
-  char *input = promptUserInput(prompt);
-  if (input) {
-    lua_pushstring(L, input);
-    free(input);
-  } else {
-    lua_pushnil(L);
-    lua_pushstring(L, "Failed to read user input");
-    return 2;
-  }
-  return 1;
-}
-
 // ============================================================================
 // Directory functions
 // ============================================================================
@@ -317,10 +280,6 @@ void register_cdirnuts_lua_api(lua_State *L) {
   // Utility functions
   lua_pushstring(L, "getCWD");
   lua_pushcfunction(L, l_getCWD);
-  lua_settable(L, -3);
-
-  lua_pushstring(L, "promptUserInput");
-  lua_pushcfunction(L, l_promptUserInput);
   lua_settable(L, -3);
 
   // Directory functions
