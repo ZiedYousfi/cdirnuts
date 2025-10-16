@@ -197,10 +197,10 @@ else
 end
 
 print("\n=== Example Complete ===")
-print("\nProject structure created in ./test_project/")
+print("\nProject structure created in "..cwd.."/"..projectName.."/")
 print("You can now:")
-print("  1. cd test_project")
+print("  1. cd "..projectName)
 print("  2. mkdir build && cd build")
 print("  3. cmake ..")
 print("  4. make")
-print("  5. ./test_project")
+print("  5. ./"..projectName)
