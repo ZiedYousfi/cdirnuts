@@ -49,11 +49,11 @@ target_include_directories(init_impl PRIVATE ${LUA_INCLUDE_DIR})
 
 if(_USE_LUA_TARGET)
   # lua_impl depends on log_impl and config_impl (executeCommand is in config_impl)
-  target_link_libraries(lua_impl PRIVATE Lua::Lua log_impl config_impl)
+  target_link_libraries(lua_impl PRIVATE Lua::Lua m log_impl config_impl)
 else()
   target_include_directories(lua_impl PRIVATE ${LUA_INCLUDE_DIR})
   # link config_impl so symbols like executeCommand are available
-  target_link_libraries(lua_impl PRIVATE ${LUA_LIBRARIES} log_impl config_impl)
+  target_link_libraries(lua_impl PRIVATE ${LUA_LIBRARIES} m log_impl config_impl)
 endif()
 target_include_directories(cdirnuts PRIVATE ${LUA_INCLUDE_DIR})
 target_link_libraries(cdirnuts PRIVATE config_impl init_impl lua_impl preset_impl)
@@ -75,10 +75,10 @@ if(BUILD_TESTS)
       # Link the project's implementation libraries so tests can resolve
       # symbols such as fromString, toString, getPresets, savePresets and
       # the logging functions.
-      target_link_libraries(cdirnuts_test PRIVATE Lua::Lua preset_impl config_impl log_impl dir_impl path_impl)
+      target_link_libraries(cdirnuts_test PRIVATE Lua::Lua m preset_impl config_impl log_impl dir_impl path_impl)
     else()
       target_include_directories(cdirnuts_test PRIVATE ${LUA_INCLUDE_DIR})
-      target_link_libraries(cdirnuts_test PRIVATE ${LUA_LIBRARIES} preset_impl config_impl log_impl dir_impl path_impl)
+      target_link_libraries(cdirnuts_test PRIVATE ${LUA_LIBRARIES} m preset_impl config_impl log_impl dir_impl path_impl)
     endif()
     set_target_properties(cdirnuts_test PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
     enable_testing()
