@@ -8,8 +8,6 @@
 #include "../include/path.h"
 #include "../include/preset.h"
 
-#define PROJECT_NAME "my_project"
-
 /// @brief Prints help information to the console.
 void print_help() {
   printf("Usage: cdirnuts [options] [project_name]\n");
@@ -49,7 +47,6 @@ typedef enum { OPT_HELP, OPT_CONFIG, OPT_PROJECT_NAME, OPT_PRESET } OptType;
 
 int main(int argc, char **argv) {
   int result = 0;
-  char *projectName = PROJECT_NAME;
   PathInfo *pathInfo = NULL;
 
   if (argc > 1) {
