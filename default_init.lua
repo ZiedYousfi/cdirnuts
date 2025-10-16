@@ -189,7 +189,7 @@ end
 print("\n6. Running Commands:")
 print("   -----------------")
 
-local success = cdirnuts.executeCommand("ls -la ./test_project")
+local success = cdirnuts.executeCommand("git init " .. cwd .. "/" .. projectName)
 if success then
     print("   ✓ Command executed successfully")
 else
