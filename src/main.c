@@ -198,7 +198,5 @@ int main(int argc, char **argv) {
 cleanup:
   if (pathInfo)
     free(pathInfo);
-  // Note: projectName points to either PROJECT_NAME constant or argv[i]
-  // Neither should be freed
   return result;
 }
