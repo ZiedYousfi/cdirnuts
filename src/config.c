@@ -27,6 +27,13 @@ int executeCommand(const char *command) {
     return -1;
   }
 
+#ifdef _WIN32
+  int exitStatus = result;
+  if (exitStatus != 0) {
+    log_error("Command '%s' exited with status %d", command, exitStatus);
+    return exitStatus;
+  }
+#else
   if (WIFEXITED(result)) {
     int exitStatus = WEXITSTATUS(result);
     if (exitStatus != 0) {
@@ -37,6 +44,7 @@ int executeCommand(const char *command) {
     log_error("Command '%s' did not terminate normally", command);
     return -1;
   }
+#endif
 
   return 0;
 }
