@@ -191,6 +191,9 @@ int main(int argc, char **argv) {
         }
       }
     }
+  } else {
+    result = init_default_setup(getcwd(NULL, 0), PROJECT_NAME);
+    goto cleanup;
   }
 cleanup:
   if (pathInfo)

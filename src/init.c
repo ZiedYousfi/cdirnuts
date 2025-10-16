@@ -3,15 +3,7 @@
 #include "../include/lua_embed.h"
 #include "../include/path.h"
 
-int init_default_setup(const char *parentDir, const char *projectName) {
-  if (!parentDir || !projectName) {
-    log_error("Invalid arguments: parentDir and projectName must not be NULL");
-    return -1;
-  }
-
-  log_info("Initializing default setup for project '%s' in directory '%s'",
-           projectName, parentDir);
-
+int init_default_setup() {
   // Execute the embedded Lua script directly from the compile-time constant
   int result = execute_lua_string(DEFAULT_LUA_SCRIPT);
 
