@@ -22,11 +22,11 @@ set(EMBEDDED_LUA_SOURCE "${CMAKE_BINARY_DIR}/default_lua_script.c")
 add_custom_command(
   OUTPUT "${EMBEDDED_LUA_SOURCE}"
   COMMAND ${CMAKE_COMMAND}
-    -DLUA_FILE=${CMAKE_SOURCE_DIR}/example.lua
+    -DLUA_FILE=${CMAKE_SOURCE_DIR}/default_init.lua
     -DOUTPUT_FILE=${EMBEDDED_LUA_SOURCE}
     -P ${CMAKE_SOURCE_DIR}/cmake/embed_lua.cmake
-  DEPENDS "${CMAKE_SOURCE_DIR}/example.lua" "${CMAKE_SOURCE_DIR}/cmake/embed_lua.cmake"
-  COMMENT "Embedding example.lua as C string"
+  DEPENDS "${CMAKE_SOURCE_DIR}/default_init.lua" "${CMAKE_SOURCE_DIR}/cmake/embed_lua.cmake"
+  COMMENT "Embedding default_init.lua as C string"
   VERBATIM
 )
 
