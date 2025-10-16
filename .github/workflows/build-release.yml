@@ -99,7 +99,7 @@ jobs:
 
       - name: Copy artifact (Windows)
         if: runner.os == 'Windows'
-        run: copy build\Release\${{ matrix.artifact_name }} artifacts\${{ matrix.asset_name }}
+        run: copy build\${{ matrix.artifact_name }} artifacts\${{ matrix.asset_name }}
         shell: cmd
 
       # - name: Upload Release Asset
