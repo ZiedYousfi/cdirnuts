@@ -10,7 +10,7 @@
 
 /// @brief Prints help information to the console.
 void print_help() {
-  printf("Usage: cdirnuts [options] [project_name]\n");
+  printf("Usage: cdirnuts [options]\n");
   printf("Options:\n");
   printf("  --help                  Show this help message\n");
   printf("  --config <file>         Specify a configuration file\n");
@@ -21,7 +21,7 @@ void print_help() {
   printf("If no project name is provided, 'my_project' will be used.\n");
 }
 
-typedef enum { OPT_HELP, OPT_CONFIG, OPT_PROJECT_NAME, OPT_PRESET } OptType;
+typedef enum { OPT_HELP, OPT_CONFIG, OPT_PRESET } OptType;
 
 /**
  * Program entry point that parses command-line options, performs default
@@ -58,8 +58,6 @@ int main(int argc, char **argv) {
         opt_type = OPT_CONFIG;
       } else if (strcmp(argv[i], "--preset") == 0) {
         opt_type = OPT_PRESET;
-      } else {
-        opt_type = OPT_PROJECT_NAME;
       }
 
       switch (opt_type) {
@@ -85,11 +83,6 @@ int main(int argc, char **argv) {
         log_info("Executing Lua script: %s", luaScript);
 
         result = execute_lua_script(luaScript);
-        goto cleanup;
-
-      case OPT_PROJECT_NAME:
-        projectName = argv[i];
-        result = init_default_setup();
         goto cleanup;
 
       case OPT_PRESET:
