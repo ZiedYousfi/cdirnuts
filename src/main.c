@@ -16,7 +16,6 @@ void print_help() {
   printf("Options:\n");
   printf("  --help                  Show this help message\n");
   printf("  --config <file>         Specify a configuration file\n");
-  printf("  --lua <script>          Execute a Lua script with cdirnuts API\n");
   printf("  --preset <name>         Use a preset by name\n");
   printf("  --preset list           List all saved presets\n");
   printf("  --preset add <name> <path>    Add a new preset\n");
@@ -93,7 +92,7 @@ int main(int argc, char **argv) {
 
       case OPT_PROJECT_NAME:
         projectName = argv[i];
-        result = init_default_setup(getcwd(NULL, 0), projectName);
+        result = init_default_setup();
         goto cleanup;
 
       case OPT_PRESET:
