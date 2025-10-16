@@ -227,7 +227,7 @@ This project is open source. See [LICENSE file](LICENCE.md) for details.
 ## Documentation
 
 - [Lua API Documentation](LUA_API.md) - Complete reference for the Lua scripting API
-- [Example Script](example.lua) - Fully commented example demonstrating all features
+- [Default Script](default_init.lua) - Fully commented example demonstrating all features
 
 ## Support
 
