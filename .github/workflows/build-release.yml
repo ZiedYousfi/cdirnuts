@@ -102,12 +102,12 @@ jobs:
         run: copy build\Release\${{ matrix.artifact_name }} artifacts\${{ matrix.asset_name }}
         shell: cmd
 
-      # - name: Upload Release Asset
-      #   uses: softprops/action-gh-release@v1
-      #   with:
-      #     files: artifacts/${{ matrix.asset_name }}
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: artifacts/${{ matrix.asset_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-matrix-complete:
     needs: build
