@@ -24,8 +24,14 @@ Path::~Path() {}
 // Dir Implementation
 // ============================================================================
 
-void Dir::AddSubDir(const Dir &dir) {
-  this->sub_dir_.push_back(dir);
+void Dir::AddSubDir(Dir *dir) {
+  this->sub_dir_.push_back(*dir);
+  dir = nullptr;
+}
+
+void Dir::AddFile(File *file) {
+  this->files_.push_back(*file);
+  file = nullptr;
 }
 
 Dir::~Dir() {}

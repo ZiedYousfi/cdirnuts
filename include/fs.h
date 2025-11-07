@@ -9,12 +9,18 @@ class Dir {
 private:
   Path path_;
   std::vector<Dir> sub_dir_;
+  std::vector<File> files_;
 
 public:
   Dir() : path_("") {}
   Dir(const Path &path) : path_(path) {}
   Dir(const std::string &path) : path_(path) {}
-  void AddSubDir(const Dir &dir);
+  /// @brief Add a sub-directory to the current directory. Takes ownership.
+  /// @param dir
+  void AddSubDir(Dir *dir);
+  /// @brief Add a file to the current directory. Takes ownership.
+  /// @param file
+  void AddFile(File *file);
   ~Dir();
 };
 
