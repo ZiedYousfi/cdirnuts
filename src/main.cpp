@@ -74,6 +74,7 @@ int main(int argc, char **argv) {
   try {
     CLI11_PARSE(app, argc, argv);
   } catch (const CLI::ParseError &e) {
+    std::cerr << e.what() << std::endl;
     return app.exit(e);
   }
 
