@@ -1,6 +1,5 @@
 ################################################################################
 # CMake Configuration for cdirnuts
-# Professional C++ project with Lua scripting support
 ################################################################################
 
 cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
@@ -9,7 +8,7 @@ project(
   cdirnuts
   LANGUAGES CXX
   VERSION 0.2.0
-  DESCRIPTION "A professional Lua-scriptable CLI application"
+  DESCRIPTION "A Lua-scriptable CLI application"
   HOMEPAGE_URL "https://github.com/ZiedYousfi/cdirnuts"
 )
 
@@ -145,7 +144,7 @@ target_link_libraries(${PROJECT_NAME}_exec
 )
 
 ################################################################################
-# Installation (Optional for enterprise use)
+# Installation
 ################################################################################
 
 include(GNUInstallDirs)
