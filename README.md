@@ -6,18 +6,18 @@ A powerful and flexible utility for creating and managing C project directory st
 
 CDirNuts is a command-line tool that enables you to:
 
-- Generate complete C project structures with customizable templates
+- Generate complete C/C++ project structures with customizable templates
 - Use **Lua scripting** for advanced project generation and automation
 - Save and reuse project templates as **presets**
 - Execute shell commands and create complex directory hierarchies programmatically
 
-Whether you need a quick default C project or a sophisticated custom structure, CDirNuts provides the flexibility to match your workflow.
+Whether you need a quick default C/C++ project or a sophisticated custom structure, CDirNuts provides the flexibility to match your workflow.
 
 ## Features
 
 ### Core Functionality
 
-- **Default Project Generation**: Creates standardized C project directory structure
+- **Default Project Generation**: Creates standardized C/C++ project directory structure
 - **Lua Scripting API**: Full programmatic control over project generation
 - **Preset System**: Save and reuse custom project templates
 - **Path Manipulation**: Advanced path parsing and construction utilities
@@ -28,7 +28,7 @@ Whether you need a quick default C project or a sophisticated custom structure, 
 
 - Generates essential files (Makefile, README.md, .gitignore, LICENSE)
 - Sets up source and include directories
-- Includes a basic "Hello, World!" C program for default projects
+- Includes a basic "Hello, World!" C/C++ program for default projects
 - Lua-based configuration for unlimited customization
 
 ## Installation
