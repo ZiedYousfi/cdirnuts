@@ -1,20 +1,19 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 namespace fs {
 
 class Dir {
 private:
   Path path_;
-  Dir *sub_dir_;
-  size_t sub_dir_count_;
+  std::vector<Dir> sub_dir_;
 
 public:
-  Dir() : path_(""), sub_dir_(nullptr), sub_dir_count_(0) {}
-  Dir(const Path &path) : path_(path), sub_dir_(nullptr), sub_dir_count_(0) {}
-  Dir(const std::string &path)
-      : path_(path), sub_dir_(nullptr), sub_dir_count_(0) {}
+  Dir() : path_("") {}
+  Dir(const Path &path) : path_(path) {}
+  Dir(const std::string &path) : path_(path) {}
   void AddSubDir(const Dir &dir);
   ~Dir();
 };

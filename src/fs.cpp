@@ -25,25 +25,10 @@ Path::~Path() {}
 // ============================================================================
 
 void Dir::AddSubDir(const Dir &dir) {
-  Dir *new_sub_dirs = new Dir[sub_dir_count_ + 1];
-
-  // Copy existing subdirectories
-  for (size_t i = 0; i < sub_dir_count_; ++i) {
-    new_sub_dirs[i] = sub_dir_[i];
-  }
-
-  // Add the new subdirectory
-  new_sub_dirs[sub_dir_count_] = dir;
-
-  // Clean up old array
-  delete[] sub_dir_;
-
-  // Update pointers
-  sub_dir_ = new_sub_dirs;
-  ++sub_dir_count_;
+  this->sub_dir_.push_back(dir);
 }
 
-Dir::~Dir() { delete[] sub_dir_; }
+Dir::~Dir() {}
 
 // ============================================================================
 // File Implementation
