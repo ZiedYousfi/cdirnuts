@@ -2,6 +2,7 @@
   "name": "cdirnuts",
   "version-string": "0.2.0",
   "dependencies": [
-    "lua"
+    "lua",
+    "cli11"
   ]
 }
