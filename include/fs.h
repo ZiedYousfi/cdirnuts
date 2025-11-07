@@ -17,10 +17,10 @@ public:
   Dir(const std::string &path) : path_(path) {}
   /// @brief Add a sub-directory to the current directory. Takes ownership.
   /// @param dir
-  void AddSubDir(Dir *dir);
+  void AddSubDir(Dir *dir) noexcept;
   /// @brief Add a file to the current directory. Takes ownership.
   /// @param file
-  void AddFile(File *file);
+  void AddFile(File *file) noexcept;
   ~Dir();
 };
 
