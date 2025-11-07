@@ -1,7 +1,15 @@
 #pragma once
 
+#include <algorithm>
+#include <stdexcept>
 #include <string>
 #include <vector>
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <sys/stat.h>
+#include <sys/types.h>
+#endif
 
 namespace fs {
 
@@ -21,6 +29,7 @@ public:
   /// @brief Add a file to the current directory. Takes ownership.
   /// @param file
   void AddFile(File *file) noexcept;
+  void WriteToDisk() const;
   ~Dir();
 };
 
@@ -37,6 +46,7 @@ public:
       : path_(path), content_(content) {}
   File(const Path &path) : path_(path), content_("") {}
   File(const std::string &path) : path_(path), content_("") {}
+  void WriteToDisk() const {}
   ~File();
 };
 
