@@ -21,7 +21,18 @@ if projectName == nil or projectName == "" then
 end
 print("   ✓ Project name set to: " .. projectName)
 
--- 1. Create a project structure
+-- Ask user for the programming language
+io.write("Choose language (c/cpp, default: c): ")
+local language = io.read()
+if language == nil or language == "" then
+    language = "c"
+end
+language = string.lower(language)
+if language ~= "c" and language ~= "cpp" then
+    language = "c"
+end
+local ext = (language == "cpp") and "cpp" or "c"
+print("   ✓ Language set to: " .. language .. " (extension: " .. ext .. ")")
 print("2. Creating Project Structure:")
 print("   ---------------------------")
 
@@ -58,6 +69,7 @@ local readmeFile = cdirnuts.createFile(
     - Easy to extend
 ]]
 )
+
 if readmeFile then
     print("   ✓ Created README.md file object")
     local success = cdirnuts.addFileToDir(rootDir, readmeFile)
@@ -66,10 +78,20 @@ if readmeFile then
     end
 end
 
--- Create main.c
-local mainFile = cdirnuts.createFile(
-    cwd .. "/" .. projectName .. "/src/main.c",
-    [[#include <stdio.h>
+-- Create main.c or main.cpp
+local mainFileName = "main." .. ext
+local mainContent
+if language == "cpp" then
+    mainContent = [[#include <iostream>
+#include "../include/app.h"
+
+int main(int argc, char **argv) {
+    std::cout << "Hello from " << APP_NAME << "!" << std::endl;
+    return 0;
+}
+]]
+else
+    mainContent = [[#include <stdio.h>
 #include "../include/app.h"
 
 int main(int argc, char **argv) {
@@ -77,12 +99,17 @@ int main(int argc, char **argv) {
     return 0;
 }
 ]]
+end
+
+local mainFile = cdirnuts.createFile(
+    cwd .. "/" .. projectName .. "/src/" .. mainFileName,
+    mainContent
 )
 if mainFile then
-    print("   ✓ Created main.c file object")
+    print("   ✓ Created " .. mainFileName .. " file object")
     local success = cdirnuts.addFileToDir(srcDir, mainFile)
     if success then
-        print("   ✓ Added main.c to src directory")
+        print("   ✓ Added " .. mainFileName .. " to src directory")
     end
 end
 
@@ -107,9 +134,25 @@ if headerFile then
 end
 
 -- Create test file
-local testFile = cdirnuts.createFile(
-    cwd .. "/" .. projectName .. "/tests/test_main.c",
-    [[#include <assert.h>
+local testFileName = "test_main." .. ext
+local testContent
+if language == "cpp" then
+    testContent = [[#include <cassert>
+#include <iostream>
+
+void test_basic() {
+    assert(1 + 1 == 2);
+    std::cout << "✓ Basic test passed" << std::endl;
+}
+
+int main() {
+    test_basic();
+    std::cout << "All tests passed!" << std::endl;
+    return 0;
+}
+]]
+else
+    testContent = [[#include <assert.h>
 #include <stdio.h>
 
 void test_basic(void) {
@@ -123,29 +166,52 @@ int main(void) {
     return 0;
 }
 ]]
+end
+
+local testFile = cdirnuts.createFile(
+    cwd .. "/" .. projectName .. "/tests/" .. testFileName,
+    testContent
 )
+
 if testFile then
-    print("   ✓ Created test_main.c file object")
+    print("   ✓ Created " .. testFileName .. " file object")
     local success = cdirnuts.addFileToDir(testsDir, testFile)
     if success then
-        print("   ✓ Added test_main.c to tests directory")
+        print("   ✓ Added " .. testFileName .. " to tests directory")
     end
 end
 
 -- Create CMakeLists.txt
-local cmakeFile = cdirnuts.createFile(
-    cwd .. "/" .. projectName .. "/CMakeLists.txt",
-    [[cmake_minimum_required(VERSION 3.15)
+local cmakeContent
+if language == "cpp" then
+    cmakeContent = [[cmake_minimum_required(VERSION 3.15)
 project(]] .. projectName .. [[)
 
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 23)
+
+include_directories(include)
+
+add_executable(]] .. projectName .. [[ src/main.cpp)
+add_executable(]] .. projectName .. [[_tests tests/test_main.cpp)
+]]
+else
+    cmakeContent = [[cmake_minimum_required(VERSION 3.15)
+project(]] .. projectName .. [[)
+
+set(CMAKE_C_STANDARD 23)
 
 include_directories(include)
 
 add_executable(]] .. projectName .. [[ src/main.c)
 add_executable(]] .. projectName .. [[_tests tests/test_main.c)
 ]]
+end
+
+local cmakeFile = cdirnuts.createFile(
+    cwd .. "/" .. projectName .. "/CMakeLists.txt",
+    cmakeContent
 )
+
 if cmakeFile then
     print("   ✓ Created CMakeLists.txt file object")
     local success = cdirnuts.addFileToDir(rootDir, cmakeFile)
@@ -197,10 +263,10 @@ else
 end
 
 print("\n=== Example Complete ===")
-print("\nProject structure created in "..cwd.."/"..projectName.."/")
+print("\nProject structure created in " .. cwd .. "/" .. projectName .. "/")
 print("You can now:")
-print("  1. cd "..projectName)
+print("  1. cd " .. projectName)
 print("  2. mkdir build && cd build")
 print("  3. cmake ..")
 print("  4. make")
-print("  5. ./"..projectName)
+print("  5. ./" .. projectName)
