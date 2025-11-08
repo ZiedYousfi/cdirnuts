@@ -1,6 +1,4 @@
 #include "presets.h"
-#include <fstream>
-#include <iostream>
 
 namespace Presets {
 
