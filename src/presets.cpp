@@ -35,12 +35,16 @@ void PresetManager::save_presets_to_file(const std::string &file_path) const {
   }
 }
 
-void PresetManager::load_presets_from_file(const std::string &file_path) {
+PresetManager
+PresetManager::load_presets_from_file(const std::string &file_path) {
+
+  PresetManager result{};
+
   std::ifstream file(file_path);
   if (!file) {
-    std::cerr << "Error opening file for reading: " << file_path << std::endl;
-    return;
+    throw std::runtime_error("Error opening file for reading: " + file_path);
   }
+
   std::string line;
   while (std::getline(file, line)) {
     size_t comma_pos = line.find("\",\"");
@@ -48,9 +52,10 @@ void PresetManager::load_presets_from_file(const std::string &file_path) {
       std::string name = line.substr(1, comma_pos - 1);
       std::string path =
           line.substr(comma_pos + 3, line.length() - comma_pos - 4);
-      presets_.emplace_back(name, path);
+      result.presets_.emplace_back(name, path);
     }
   }
+  return result;
 }
 
 } // namespace Presets

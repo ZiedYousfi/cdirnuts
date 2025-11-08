@@ -33,7 +33,7 @@ public:
   std::vector<Preset> list_presets() const;
   Preset *get_preset(const std::string &name);
   void save_presets_to_file(const std::string &file_path) const;
-  void load_presets_from_file(const std::string &file_path);
+  static PresetManager load_presets_from_file(const std::string &file_path);
 };
 
 } // namespace Presets
