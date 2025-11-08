@@ -6,7 +6,7 @@
 namespace Lua {
 class LuaEngine {
 private:
-  sol::state lua;
+  sol::state lua_state_;
 
 public:
   LuaEngine() {}
