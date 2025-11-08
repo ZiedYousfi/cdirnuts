@@ -152,6 +152,7 @@ set_target_properties(${PROJECT_NAME}_exec PROPERTIES
 target_link_libraries(${PROJECT_NAME}_exec
   PRIVATE
     ${PROJECT_NAME}
+    CLI11::CLI11
 )
 
 ################################################################################

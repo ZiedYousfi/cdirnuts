@@ -10,12 +10,12 @@ private:
   sol::state lua_state_;
 
 public:
-  LuaEngine() {}
+  LuaEngine();
 
-  void registerAPI() {}
+  void registerAPI();
 
-  void executeFile(const std::string &path) {}
+  void executeFile(const std::string &path);
 
-  void executeString(const std::string &code) {}
+  void executeString(const std::string &code);
 };
 } // namespace Lua

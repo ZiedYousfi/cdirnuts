@@ -23,12 +23,12 @@ Path::~Path() {}
 // Dir Implementation
 // ============================================================================
 
-void Dir::add_subdir(Dir *dir) {
+void Dir::add_subdir(Dir *dir) noexcept {
   this->sub_dir_.push_back(*dir);
   dir = nullptr;
 }
 
-void Dir::add_file(File *file) {
+void Dir::add_file(File *file) noexcept {
   this->files_.push_back(*file);
   file = nullptr;
 }

@@ -13,6 +13,35 @@
 
 namespace fs {
 
+class Path {
+private:
+  std::string path_;
+
+public:
+  Path() : path_("") {}
+  Path(const std::string &path) : path_(path) {}
+  Path from_parent(const std::string &parent, const std::string &name) const;
+  ~Path();
+  std::string to_string() const { return path_; }
+};
+
+class File {
+private:
+  Path path_;
+  std::string content_;
+
+public:
+  File() : path_(""), content_("") {}
+  File(const Path &path, const std::string &content)
+      : path_(path), content_(content) {}
+  File(const std::string &path, const std::string &content)
+      : path_(path), content_(content) {}
+  File(const Path &path) : path_(path), content_("") {}
+  File(const std::string &path) : path_(path), content_("") {}
+  void write_to_disk() const;
+  ~File();
+};
+
 class Dir {
 private:
   Path path_;
@@ -31,35 +60,6 @@ public:
   void add_file(File *file) noexcept;
   void write_to_disk() const;
   ~Dir();
-};
-
-class File {
-private:
-  Path path_;
-  std::string content_;
-
-public:
-  File() : path_(""), content_("") {}
-  File(const Path &path, const std::string &content)
-      : path_(path), content_(content) {}
-  File(const std::string &path, const std::string &content)
-      : path_(path), content_(content) {}
-  File(const Path &path) : path_(path), content_("") {}
-  File(const std::string &path) : path_(path), content_("") {}
-  void write_to_disk() const {}
-  ~File();
-};
-
-class Path {
-private:
-  std::string path_;
-
-public:
-  Path() : path_("") {}
-  Path(const std::string &path) : path_(path) {}
-  Path from_parent(const std::string &parent, const std::string &name) const {}
-  ~Path();
-  std::string to_string() const { return path_; }
 };
 
 } // namespace fs
