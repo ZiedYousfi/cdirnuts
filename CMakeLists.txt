@@ -47,6 +47,7 @@ endif()
 
 find_package(Lua REQUIRED)
 find_package(CLI11 REQUIRED)
+find_package(sol2 REQUIRED)
 
 ################################################################################
 # Generate Embedded Lua Script
@@ -122,6 +123,7 @@ target_link_libraries(${PROJECT_NAME}
   PRIVATE
     Lua::Lua
     CLI11::CLI11
+    sol2::sol2
 )
 
 ################################################################################
