@@ -73,11 +73,13 @@ add_custom_command(
 # Library sources
 set(${PROJECT_NAME}_SOURCES
   src/fs.cpp
+  src/presets.cpp
 )
 
 # Library headers
 set(${PROJECT_NAME}_HEADERS
   include/fs.h
+  include/presets.h
 )
 
 ################################################################################
