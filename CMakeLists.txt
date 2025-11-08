@@ -123,9 +123,14 @@ target_include_directories(${PROJECT_NAME}
 # Link dependencies
 target_link_libraries(${PROJECT_NAME}
   PRIVATE
-    Lua::Lua
+    ${LUA_LIBRARIES}
     CLI11::CLI11
     sol2::sol2
+)
+
+target_include_directories(${PROJECT_NAME}
+  PRIVATE
+    ${LUA_INCLUDE_DIR}
 )
 
 ################################################################################
