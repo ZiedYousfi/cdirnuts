@@ -45,6 +45,13 @@ void LuaEngine::registerAPI() {
   };
 
   cdirnuts["execute_shell_command"] = [](const std::string &command) {
+    std::cout << "Execute command: " << command << "? (y/n): ";
+    std::string response;
+    std::getline(std::cin, response);
+    if (response != "y" && response != "Y") {
+      throw std::runtime_error("Command execution cancelled by user");
+    }
+
     int ret = std::system(command.c_str());
     if (ret != 0) {
       throw std::runtime_error("Shell command failed with exit code " +
