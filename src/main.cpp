@@ -39,14 +39,27 @@ int main(int argc, char **argv) {
 
   int result = 0;
 
+  // Optional positional config file argument
+  std::string config_file;
+  app.add_option("file", config_file, "Configuration file path (optional)");
+
   // --config option
   auto *config_cmd =
       app.add_subcommand("config", "Specify a configuration file");
-  std::string config_file;
-  config_cmd->add_option("file", config_file, "Configuration file path")
+  std::string config_file_cmd;
+  config_cmd->add_option("file", config_file_cmd, "Configuration file path")
       ->required();
   config_cmd->callback([&]() {
-    // TODO: Implement configuration file loading
+    Lua::LuaEngine lua;
+
+    if (!std::ifstream(config_file_cmd)) {
+      std::cerr << "Configuration file does not exist: " << config_file_cmd
+                << '\n';
+      result = 1;
+      return;
+    }
+
+    lua.execute_file(config_file_cmd);
   });
 
   // --preset subcommand with nested options
@@ -109,7 +122,19 @@ int main(int argc, char **argv) {
     if (!*config_cmd && !*preset_cmd) {
       Lua::LuaEngine lua;
 
-      lua.execute_string(std::string(DEFAULT_LUA_SCRIPT));
+      // If a config file was provided as positional argument, use it
+      if (!config_file.empty()) {
+        if (!std::ifstream(config_file)) {
+          std::cerr << "Configuration file does not exist: " << config_file
+                    << '\n';
+          result = 1;
+          return;
+        }
+        lua.execute_file(config_file);
+      } else {
+        // Otherwise use default script
+        lua.execute_string(std::string(DEFAULT_LUA_SCRIPT));
+      }
     }
   });
 
