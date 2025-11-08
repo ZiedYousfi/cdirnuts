@@ -43,6 +43,14 @@ void LuaEngine::registerAPI() {
   cdirnuts["append_file"] = [](fs::Dir &parent, fs::File *file) {
     parent.add_file(file);
   };
+
+  cdirnuts["execute_shell_command"] = [](const std::string &command) {
+    int ret = std::system(command.c_str());
+    if (ret != 0) {
+      throw std::runtime_error("Shell command failed with exit code " +
+                               std::to_string(ret));
+    }
+  };
 }
 
 void LuaEngine::executeFile(const std::string &path) {

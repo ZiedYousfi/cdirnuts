@@ -127,7 +127,7 @@ cdirnuts.write_virtual_dir(project)
 
 - **Directory Management**: `create_virtual_dir()`, `write_virtual_dir()`, `append_subdir()`
 - **File Operations**: `create_virtual_file()`, `write_virtual_file()`, `append_file()`
-- **Utilities**: `getCWD()`
+- **Utilities**: `getCWD()`, `execute_shell_command()`
 
 See `default_init.lua` in the repository for a complete working example.
 

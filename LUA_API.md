@@ -179,6 +179,27 @@ local cwd = cdirnuts.getCWD()
 print("Working in: " .. cwd)
 ```
 
+#### `cdirnuts.execute_shell_command(command)`
+
+Executes a shell command.
+
+**Parameters:**
+
+- `command` (string): The shell command to execute
+
+**Returns:**
+
+- Nothing on success (throws on error)
+
+**Example:**
+
+```lua
+cdirnuts.execute_shell_command("git init")
+print("Git repository initialized")
+```
+
+**Note:** This function throws a Lua error if the command fails (non-zero exit code).
+
 ## Examples
 
 ### Example 1: Simple Directory Structure
@@ -297,6 +318,27 @@ local configFile = cdirnuts.create_virtual_file(
 
 cdirnuts.write_virtual_file(configFile)
 print("Config file created!")
+```
+
+### Example 5: Creating a Git Repository
+
+```lua
+local cwd = cdirnuts.getCWD()
+
+-- Create a project directory with .gitignore
+local repo = cdirnuts.create_virtual_dir(cwd .. "/my_repo")
+
+local gitignore = cdirnuts.create_virtual_file(
+    cwd .. "/my_repo/.gitignore",
+    "*.o\n*.exe\nbuild/\nnode_modules/\n"
+)
+
+cdirnuts.append_file(repo, gitignore)
+cdirnuts.write_virtual_dir(repo)
+
+-- Initialize git repository
+cdirnuts.execute_shell_command("git init " .. cwd .. "/my_repo")
+print("Git repository initialized!")
 ```
 
 ## Memory Management

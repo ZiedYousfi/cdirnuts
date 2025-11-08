@@ -245,6 +245,8 @@ print("   ----------------------")
 cdirnuts.write_virtual_dir(rootDir)
 print("   ✓ Successfully created entire project structure!")
 
+cdirnuts.execute_shell_command("git init ")
+
 print("\n=== Example Complete ===")
 print("\nProject structure created in " .. cwd .. "/" .. projectName .. "/")
 print("You can now:")
