@@ -1,6 +1,6 @@
-#include "../include/presets.h"
-#include "../include/lua.h"
 #include "../include/default_lua_script.h"
+#include "../include/lua.h"
+#include "../include/presets.h"
 #include <CLI/CLI.hpp>
 #include <iostream>
 
