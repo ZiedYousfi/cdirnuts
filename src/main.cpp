@@ -1,3 +1,4 @@
+#include "presets.h"
 #include <CLI/CLI.hpp>
 #include <iostream>
 
@@ -14,6 +15,20 @@
  * - --preset remove <name>: removes a preset by name
  */
 int main(int argc, char **argv) {
+
+  Presets::PresetManager preset_manager;
+
+  auto file_path =
+      std::getenv("DIRNUTS_DIR_PATH")
+          ? std::string(std::getenv("DIRNUTS_DIR_PATH")) + "/presets.cdndb"
+          : "presets.cdndb";
+
+  try {
+    preset_manager.load_presets_from_file(file_path);
+  } catch (const std::exception &e) {
+    std::cerr << e.what() << '\n';
+  }
+
   CLI::App app("cdirnuts - Project initialization tool");
 
   int result = 0;
@@ -35,7 +50,14 @@ int main(int argc, char **argv) {
   auto *preset_list =
       preset_cmd->add_subcommand("list", "List all saved presets");
   preset_list->callback([&]() {
-    // TODO: Implement listing of presets
+    auto presets = preset_manager.list_presets();
+    if (presets.empty()) {
+      std::cout << "No presets saved.\n";
+    } else {
+      for (const auto &preset : presets) {
+        preset.print();
+      }
+    }
   });
 
   // --preset add <name> <path>
@@ -44,7 +66,14 @@ int main(int argc, char **argv) {
   preset_add->add_option("name", preset_add_name, "Preset name")->required();
   preset_add->add_option("path", preset_add_path, "Preset path")->required();
   preset_add->callback([&]() {
-    // TODO: Implement adding a new preset
+    Presets::Preset new_preset(preset_add_name, preset_add_path);
+    preset_manager.add_preset(new_preset);
+    try {
+      preset_manager.save_presets_to_file(file_path);
+      std::cout << "Preset added successfully.\n";
+    } catch (const std::exception &e) {
+      std::cerr << "Error saving presets: " << e.what() << '\n';
+    }
   });
 
   // --preset remove <name>
@@ -53,7 +82,13 @@ int main(int argc, char **argv) {
   preset_remove->add_option("name", preset_remove_name, "Preset name")
       ->required();
   preset_remove->callback([&]() {
-    // TODO: Implement removing a preset
+    preset_manager.remove_preset(preset_remove_name);
+    try {
+      preset_manager.save_presets_to_file(file_path);
+      std::cout << "Preset removed successfully.\n";
+    } catch (const std::exception &e) {
+      std::cerr << "Error saving presets: " << e.what() << '\n';
+    }
   });
 
   // --preset <name> (use preset directly)
