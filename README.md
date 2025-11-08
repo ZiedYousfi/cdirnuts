@@ -102,31 +102,32 @@ CDirNuts provides a comprehensive Lua API for creating custom project structures
 ```lua
 -- Create a simple project with custom structure
 
+-- Get current working directory
+local cwd = cdirnuts.getCWD()
+
 -- Allocate directories
-local project = cdirnuts.allocDir("./my_app")
-local src = cdirnuts.allocDir("./my_app/src")
+local project = cdirnuts.create_virtual_dir(cwd .. "/my_app")
+local src = cdirnuts.create_virtual_dir(cwd .. "/my_app/src")
 
 -- Create files
-local mainFile = cdirnuts.createFile(
-    "./my_app/src/main.c",
+local mainFile = cdirnuts.create_virtual_file(
+    cwd .. "/my_app/src/main.c",
     "#include <stdio.h>\n\nint main() {\n    printf(\"Hello!\\n\");\n    return 0;\n}\n"
 )
 
 -- Build the structure
-cdirnuts.addFileToDir(src, mainFile)
-cdirnuts.addSubDirToDir(project, src)
+cdirnuts.append_file(src, mainFile)
+cdirnuts.append_subdir(project, src)
 
 -- Create on filesystem
-cdirnuts.createDir(project)
+cdirnuts.write_virtual_dir(project)
 ```
 
 ### Available Lua Functions
 
-- **Directory Management**: `allocDir()`, `createDir()`, `addSubDirToDir()`
-- **File Operations**: `createFile()`, `writeFile()`, `addFileToDir()`
-- **Path Utilities**: `parsePath()`, `constructPath()`, `copySubstring()`
-- **Command Execution**: `executeCommand()`
-- **User Interaction**: `getCwd()`
+- **Directory Management**: `create_virtual_dir()`, `write_virtual_dir()`, `append_subdir()`
+- **File Operations**: `create_virtual_file()`, `write_virtual_file()`, `append_file()`
+- **Utilities**: `getCWD()`
 
 See `default_init.lua` in the repository for a complete working example.
 
@@ -167,9 +168,10 @@ Runs the provided `default_init.lua` script to create a custom project with:
 ```bash
 # Create a custom Lua template
 cat > my_template.lua << 'EOF'
-local project = cdirnuts.allocDir("./microservice")
+local cwd = cdirnuts.getCWD()
+local project = cdirnuts.create_virtual_dir(cwd .. "/microservice")
 -- ... add your custom structure
-cdirnuts.createDir(project)
+cdirnuts.write_virtual_dir(project)
 EOF
 
 # Save as preset
