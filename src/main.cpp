@@ -95,9 +95,8 @@ int main(int argc, char **argv) {
   auto *preset_use = preset_cmd->add_subcommand("use", "Use a preset by name");
   std::string preset_use_name;
   preset_use->add_option("name", preset_use_name, "Preset name")->required();
-  preset_use->callback([&]() {
-    // TODO: Implement using a preset
-  });
+  preset_use->callback(
+      [&]() { preset_manager.get_preset(preset_use_name)->use(); });
 
   // Default behavior (no args)
   app.callback([&]() {
