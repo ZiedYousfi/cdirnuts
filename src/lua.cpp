@@ -2,7 +2,7 @@
 
 namespace Lua {
 LuaEngine::LuaEngine() {
-  lua_state_.open_libraries(sol::lib::base);
+  lua_state_.open_libraries(sol::lib::base, sol::lib::io, sol::lib::string);
   register_api();
 }
 
