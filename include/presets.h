@@ -18,6 +18,9 @@ public:
       : name_(name), path_(path) {}
   std::string get_name() const { return name_; }
   std::string get_path() const { return path_; }
+  void print() const {
+    std::cout << "Preset Name: " << name_ << ", Path: " << path_ << std::endl;
+  }
 };
 
 class PresetManager {
