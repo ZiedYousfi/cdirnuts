@@ -23,17 +23,17 @@ Path::~Path() {}
 // Dir Implementation
 // ============================================================================
 
-void Dir::AddSubDir(Dir *dir) {
+void Dir::add_subdir(Dir *dir) {
   this->sub_dir_.push_back(*dir);
   dir = nullptr;
 }
 
-void Dir::AddFile(File *file) {
+void Dir::add_file(File *file) {
   this->files_.push_back(*file);
   file = nullptr;
 }
 
-void Dir::WriteToDisk() const {
+void Dir::write_to_disk() const {
 
   std::string dir_path = this->path_.to_string();
   // Create the directory
@@ -44,7 +44,7 @@ void Dir::WriteToDisk() const {
   // Write all files to disk
   for (const auto &file : this->files_) {
     try {
-      file.WriteToDisk();
+      file.write_to_disk();
     } catch (const std::exception &e) {
       std::cerr << e.what() << '\n';
     }
@@ -53,7 +53,7 @@ void Dir::WriteToDisk() const {
   // Recursively write all sub-directories to disk
   for (const auto &sub_dir : this->sub_dir_) {
     try {
-      sub_dir.WriteToDisk();
+      sub_dir.write_to_disk();
     } catch (const std::exception &e) {
       std::cerr << e.what() << '\n';
     }
@@ -66,7 +66,7 @@ Dir::~Dir() {}
 // File Implementation
 // ============================================================================
 
-void File::WriteToDisk() const {
+void File::write_to_disk() const {
   std::string file_path = this->path_.to_string();
   FILE *file = fopen(file_path.c_str(), "w");
 

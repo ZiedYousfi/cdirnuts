@@ -25,11 +25,11 @@ public:
   Dir(const std::string &path) : path_(path) {}
   /// @brief Add a sub-directory to the current directory. Takes ownership.
   /// @param dir
-  void AddSubDir(Dir *dir) noexcept;
+  void add_subdir(Dir *dir) noexcept;
   /// @brief Add a file to the current directory. Takes ownership.
   /// @param file
-  void AddFile(File *file) noexcept;
-  void WriteToDisk() const;
+  void add_file(File *file) noexcept;
+  void write_to_disk() const;
   ~Dir();
 };
 
@@ -46,7 +46,7 @@ public:
       : path_(path), content_(content) {}
   File(const Path &path) : path_(path), content_("") {}
   File(const std::string &path) : path_(path), content_("") {}
-  void WriteToDisk() const {}
+  void write_to_disk() const {}
   ~File();
 };
 
