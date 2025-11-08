@@ -2,7 +2,9 @@
 
 #include "./fs.h"
 #include <filesystem>
+#include <iostream>
 #include <sol/sol.hpp>
+#include <string>
 
 namespace Lua {
 class LuaEngine {
