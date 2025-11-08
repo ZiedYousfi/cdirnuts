@@ -9,7 +9,7 @@ LuaEngine::LuaEngine() {
 void LuaEngine::registerAPI() {
   auto cdirnuts = lua_state_.create_table("cdirnuts");
 
-  cdirnuts["getCWD"] = []() { return; };
+  cdirnuts["getCWD"] = []() { return std::filesystem::current_path(); };
 
   cdirnuts["create_virtual_dir"] = [](const std::string &path) {
     auto dir = new fs::Dir(path.c_str());

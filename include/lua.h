@@ -1,6 +1,7 @@
 #pragma once
 
 #include "fs.h"
+#include <filesystem>
 #include <sol/sol.hpp>
 
 namespace Lua {
