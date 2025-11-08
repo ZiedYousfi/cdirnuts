@@ -2,6 +2,10 @@
 
 namespace Presets {
 
+// ============================================================================
+// PresetManager Implementation
+// ============================================================================
+
 void PresetManager::add_preset(const Preset &preset) {
   presets_.push_back(preset);
 }
