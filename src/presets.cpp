@@ -1,6 +1,14 @@
 #include "../include/presets.h"
 
 namespace Presets {
+// ============================================================================
+// Preset Implementation
+// ============================================================================
+
+void Preset::use() const {
+  Lua::LuaEngine lua;
+  lua.execute_file(path_);
+}
 
 // ============================================================================
 // PresetManager Implementation

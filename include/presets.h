@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../include/lua.h"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -16,7 +17,7 @@ public:
   Preset() = default;
   Preset(const std::string &name, const std::string &path)
       : name_(name), path_(path) {}
-  void use() const {}
+  void use() const;
   std::string get_name() const { return name_; }
   std::string get_path() const { return path_; }
   void print() const {
