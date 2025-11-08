@@ -25,10 +25,14 @@ int main(int argc, char **argv) {
           ? std::string(std::getenv("DIRNUTS_DIR_PATH")) + "/presets.cdndb"
           : "./presets.cdndb";
 
-  try {
-    preset_manager.load_presets_from_file(file_path);
-  } catch (const std::exception &e) {
-    std::cerr << e.what() << '\n';
+  if (std::ifstream(file_path)) {
+    try {
+      preset_manager.load_presets_from_file(file_path);
+    } catch (const std::exception &e) {
+      std::cerr << e.what() << '\n';
+    }
+  } else {
+    std::cout << "No presets file found, starting fresh.\n";
   }
 
   CLI::App app("cdirnuts - Project initialization tool");
