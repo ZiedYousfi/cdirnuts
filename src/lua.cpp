@@ -1,4 +1,4 @@
-#include "lua.h"
+#include "../include/lua.h"
 
 namespace Lua {
 LuaEngine::LuaEngine() {

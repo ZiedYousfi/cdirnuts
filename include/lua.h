@@ -1,6 +1,6 @@
 #pragma once
 
-#include "fs.h"
+#include "./fs.h"
 #include <filesystem>
 #include <sol/sol.hpp>
 
