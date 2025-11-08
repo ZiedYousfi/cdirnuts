@@ -9,19 +9,12 @@ private:
   sol::state lua;
 
 public:
-  LuaEngine() {
-    lua.open_libraries(sol::lib::base);
-    registerAPI();
-  }
+  LuaEngine() {}
 
-  void registerAPI() {
-    auto cdirnuts = lua.create_table("cdirnuts");
+  void registerAPI() {}
 
-    // TODO: Implement API functions
-  }
+  void executeFile(const std::string &path) {}
 
-  void executeFile(const std::string &path) { lua.script_file(path); }
-
-  void executeString(const std::string &code) { lua.script(code); }
+  void executeString(const std::string &code) {}
 };
 } // namespace Lua
