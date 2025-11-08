@@ -75,12 +75,14 @@ add_custom_command(
 set(${PROJECT_NAME}_SOURCES
   src/fs.cpp
   src/presets.cpp
+  src/lua.cpp
 )
 
 # Library headers
 set(${PROJECT_NAME}_HEADERS
   include/fs.h
   include/presets.h
+  include/lua.h
 )
 
 ################################################################################
