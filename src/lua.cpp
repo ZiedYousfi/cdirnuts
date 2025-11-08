@@ -3,10 +3,10 @@
 namespace Lua {
 LuaEngine::LuaEngine() {
   lua_state_.open_libraries(sol::lib::base);
-  registerAPI();
+  register_api();
 }
 
-void LuaEngine::registerAPI() {
+void LuaEngine::register_api() {
   auto cdirnuts = lua_state_.create_table("cdirnuts");
 
   cdirnuts["getCWD"] = []() {
@@ -60,11 +60,11 @@ void LuaEngine::registerAPI() {
   };
 }
 
-void LuaEngine::executeFile(const std::string &path) {
+void LuaEngine::execute_file(const std::string &path) {
   lua_state_.script_file(path);
 }
 
-void LuaEngine::executeString(const std::string &code) {
+void LuaEngine::execute_string(const std::string &code) {
   lua_state_.script(code);
 }
 } // namespace Lua

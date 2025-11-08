@@ -12,10 +12,10 @@ private:
 public:
   LuaEngine();
 
-  void registerAPI();
+  void register_api();
 
-  void executeFile(const std::string &path);
+  void execute_file(const std::string &path);
 
-  void executeString(const std::string &code);
+  void execute_string(const std::string &code);
 };
 } // namespace Lua
