@@ -201,16 +201,32 @@ CDirNuts is built with a modular architecture:
 
 ## Testing
 
+CDirNuts includes a comprehensive test suite using Google Test (GTest).
+
 ```bash
-# Build with tests enabled
-cmake --preset=default -DBUILD_TESTS=ON
+# Build the project with tests (testing is enabled by default)
+cmake --preset vcpkg
 cmake --build build
 
-# Run tests
-./build/cdirnuts_test
-# or
-ctest --test-dir build
+# Run tests using CTest
+cd build
+ctest --output-on-failure
+
+# Or run the test executable directly
+./build/cdirnuts_tests
 ```
+
+### Test Coverage
+
+The test suite includes:
+
+- **File System Tests** (`test_fs.cpp`): Path manipulation, file/directory creation, nested structures
+- **Preset Tests** (`test_presets.cpp`): Preset management, save/load operations, edge cases
+- **Lua Engine Tests** (`test_lua.cpp`): Lua API bindings, script execution, error handling
+
+All 48 tests verify core functionality and ensure reliability across different scenarios.
+
+See [tests/README.md](tests/README.md) for more information about the test suite.
 
 ## Contributing
 

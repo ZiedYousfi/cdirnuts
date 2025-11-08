@@ -185,3 +185,47 @@ if(NOT MSVC)
   set_target_properties(${PROJECT_NAME} PROPERTIES VISIBILITY_INLINES_HIDDEN ON)
   set_target_properties(${PROJECT_NAME} PROPERTIES CXX_VISIBILITY_PRESET hidden)
 endif()
+
+################################################################################
+# Testing
+################################################################################
+
+option(BUILD_TESTING "Build the testing suite" ON)
+
+if(BUILD_TESTING)
+  enable_testing()
+  find_package(GTest REQUIRED)
+
+  # Test sources
+  set(TEST_SOURCES
+    tests/test_fs.cpp
+    tests/test_presets.cpp
+    tests/test_lua.cpp
+  )
+
+  # Create test executable
+  add_executable(${PROJECT_NAME}_tests ${TEST_SOURCES})
+
+  set_target_properties(${PROJECT_NAME}_tests PROPERTIES
+    CXX_STANDARD 23
+    CXX_STANDARD_REQUIRED ON
+    CXX_EXTENSIONS OFF
+  )
+
+  target_link_libraries(${PROJECT_NAME}_tests
+    PRIVATE
+      ${PROJECT_NAME}
+      GTest::gtest
+      GTest::gtest_main
+      GTest::gmock
+  )
+
+  target_include_directories(${PROJECT_NAME}_tests
+    PRIVATE
+      ${CMAKE_CURRENT_SOURCE_DIR}/include
+  )
+
+  # Discover tests
+  include(GoogleTest)
+  gtest_discover_tests(${PROJECT_NAME}_tests)
+endif()
