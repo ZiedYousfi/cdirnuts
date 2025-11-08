@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
 
 project(
   cdirnuts
-  LANGUAGES CXX
+  LANGUAGES CXX C
   VERSION 0.2.0
   DESCRIPTION "A Lua-scriptable CLI application"
   HOMEPAGE_URL "https://github.com/ZiedYousfi/cdirnuts"
@@ -91,7 +91,7 @@ set(${PROJECT_NAME}_HEADERS
 
 add_library(${PROJECT_NAME}
   ${${PROJECT_NAME}_SOURCES}
-  ${${PROJECT_NAME}_HEADERS}
+  ${EMBEDDED_LUA_SOURCE}
 )
 
 # Set standard properties
@@ -139,7 +139,6 @@ target_include_directories(${PROJECT_NAME}
 
 add_executable(${PROJECT_NAME}_exec
   src/main.cpp
-  ${EMBEDDED_LUA_SOURCE}
 )
 
 set_target_properties(${PROJECT_NAME}_exec PROPERTIES

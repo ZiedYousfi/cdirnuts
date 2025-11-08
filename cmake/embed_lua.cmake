@@ -23,7 +23,7 @@ file(WRITE "${OUTPUT_FILE}"
 
 #include \"../include/default_lua_script.h\"
 
-static const char *DEFAULT_LUA_SCRIPT =
+const char *DEFAULT_LUA_SCRIPT =
 \"${LUA_CONTENT}\";
 ")
 
