@@ -1,4 +1,6 @@
-#include "presets.h"
+#include "../include/presets.h"
+#include "../include/lua.h"
+#include "../include/default_lua_script.h"
 #include <CLI/CLI.hpp>
 #include <iostream>
 
@@ -101,7 +103,9 @@ int main(int argc, char **argv) {
   // Default behavior (no args)
   app.callback([&]() {
     if (!*config_cmd && !*preset_cmd) {
-      // TODO: Implement default behavior
+      Lua::LuaEngine lua;
+
+      lua.execute_string(std::string(DEFAULT_LUA_SCRIPT));
     }
   });
 
