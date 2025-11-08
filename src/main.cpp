@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
   auto file_path =
       std::getenv("DIRNUTS_DIR_PATH")
           ? std::string(std::getenv("DIRNUTS_DIR_PATH")) + "/presets.cdndb"
-          : "presets.cdndb";
+          : "./presets.cdndb";
 
   try {
     preset_manager.load_presets_from_file(file_path);
