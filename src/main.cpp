@@ -27,7 +27,8 @@ int main(int argc, char **argv) {
 
   if (std::ifstream(file_path)) {
     try {
-      preset_manager.load_presets_from_file(file_path);
+      preset_manager =
+          Presets::PresetManager::load_presets_from_file(file_path);
     } catch (const std::exception &e) {
       std::cerr << e.what() << '\n';
     }
