@@ -102,7 +102,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
   POSITION_INDEPENDENT_CODE ON
   SOVERSION 0
   VERSION ${PROJECT_VERSION}
-  INTERPROCEDURAL_OPTIMIZATION_RELEASE ${ipo_supported}
 )
 
 # Compiler options (cross-platform)
@@ -142,7 +141,6 @@ set_target_properties(${PROJECT_NAME}_exec PROPERTIES
   CXX_STANDARD 23
   CXX_STANDARD_REQUIRED ON
   CXX_EXTENSIONS OFF
-  INTERPROCEDURAL_OPTIMIZATION_RELEASE ${ipo_supported}
 )
 
 target_link_libraries(${PROJECT_NAME}_exec
