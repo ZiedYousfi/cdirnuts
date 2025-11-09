@@ -82,4 +82,7 @@ void File::write_to_disk() const {
                              file_path);
   }
 }
+
+File::~File() {}
+
 } // namespace fs
