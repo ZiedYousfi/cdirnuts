@@ -59,6 +59,10 @@ PresetManager::load_presets_from_file(const std::string &file_path) {
 
   std::string line;
   while (std::getline(file, line)) {
+    // Trim trailing '\r' if present (handles Windows CRLF line endings)
+    if (!line.empty() && line.back() == '\r') {
+      line.pop_back();
+    }
     size_t comma_pos = line.find("\",\"");
     if (comma_pos != std::string::npos) {
       std::string name = line.substr(1, comma_pos - 1);
