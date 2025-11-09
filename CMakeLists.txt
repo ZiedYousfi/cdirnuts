@@ -220,7 +220,10 @@ if(BUILD_TESTING)
       ${CMAKE_CURRENT_SOURCE_DIR}/include
   )
 
-  # Discover tests
-  include(GoogleTest)
-  gtest_discover_tests(${PROJECT_NAME}_tests)
+  # Discover tests only if not cross-compiling
+  # (cross-compilation would fail because the test executable is for a different architecture)
+  if(NOT CMAKE_CROSSCOMPILING)
+    include(GoogleTest)
+    gtest_discover_tests(${PROJECT_NAME}_tests)
+  endif()
 endif()
