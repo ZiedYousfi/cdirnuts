@@ -1053,3 +1053,8 @@ vcpkg_installed
 !.github/workflows/**
 
 *.cdndb
+
+# Test output directories
+test_output/
+test_presets_output/
+test_lua_output/
