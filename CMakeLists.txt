@@ -32,19 +32,6 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
 
-# Enable IPO/LTO if supported (cross-platform way)
-# Disable on Windows MinGW due to linking issues with vcpkg libraries
-include(CheckIPOSupported)
-check_ipo_supported(RESULT ipo_supported OUTPUT ipo_output)
-if(MINGW)
-  set(ipo_supported FALSE)
-  message(STATUS "IPO/LTO disabled on MinGW due to vcpkg library compatibility")
-elseif(ipo_supported)
-  message(STATUS "IPO/LTO is supported and will be enabled for Release builds")
-else()
-  message(STATUS "IPO/LTO is not supported: ${ipo_output}")
-endif()
-
 # Compiler flags for all configurations
 if(MSVC)
   # MSVC-specific flags
