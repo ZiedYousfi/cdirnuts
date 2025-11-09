@@ -98,7 +98,7 @@ jobs:
           CXX: ${{ matrix.setup_cross_compile && 'aarch64-linux-gnu-g++' || '' }}
 
       - name: Build
-        run: cmake --build build --preset release -- -j$(nproc)
+        run: cmake --build build --preset release
         shell: bash
 
       - name: Create artifact directory
