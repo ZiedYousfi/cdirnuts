@@ -36,8 +36,7 @@
         "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
         "CMAKE_BUILD_TYPE": "Release",
         "DEBUG_FLAG": "OFF",
-        "BUILD_TESTS": "OFF",
-        "CMAKE_CXX_FLAGS_RELEASE": "-O3 -DNDEBUG -flto"
+        "BUILD_TESTS": "OFF"
       }
     }
   ],
