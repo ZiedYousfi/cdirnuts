@@ -185,9 +185,7 @@ endif()
 # Testing
 ################################################################################
 
-option(BUILD_TESTING "Build the testing suite" ON)
-
-if(BUILD_TESTING)
+if(BUILD_TESTS)
   enable_testing()
   find_package(GTest REQUIRED)
 
