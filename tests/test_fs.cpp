@@ -43,7 +43,7 @@ TEST_F(FsTest, PathConstruction) {
   fs::Path path1;
   EXPECT_EQ(path1.to_string(), "");
 
-  fs::Path path2("test/path");
+  fs::Path path2(std::string("test/path"));
   EXPECT_EQ(path2.to_string(), "test/path");
 }
 
@@ -63,9 +63,9 @@ TEST_F(FsTest, PathFromParent) {
 TEST_F(FsTest, FileConstruction) {
   fs::File file1;
 
-  fs::File file2("test.txt", "content");
+  fs::File file2(std::string("test.txt"), std::string("content"));
 
-  fs::Path path("test.txt");
+  fs::Path path(std::string("test.txt"));
   fs::File file3(path, "content");
 
   // No exceptions thrown
@@ -116,9 +116,9 @@ TEST_F(FsTest, FileWriteMultilineContent) {
 TEST_F(FsTest, DirConstruction) {
   fs::Dir dir1;
 
-  fs::Dir dir2("test_dir");
+  fs::Dir dir2(std::string("test_dir"));
 
-  fs::Path path("test_dir");
+  fs::Path path(std::string("test_dir"));
   fs::Dir dir3(path);
 
   // No exceptions thrown
