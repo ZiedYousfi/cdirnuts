@@ -1,4 +1,5 @@
 #include "../include/fs.h"
+#include <fstream>
 #include <iostream>
 
 namespace fs {
@@ -36,7 +37,9 @@ void Dir::write_to_disk() const {
   std::string dir_path = this->path_.to_string();
   // Create the directory
   if (mkdir(dir_path.c_str(), 0755) != 0) {
-    throw std::runtime_error("Failed to create directory: " + dir_path);
+    if (errno != EEXIST) {
+      throw std::runtime_error("Failed to create directory: " + dir_path);
+    }
   }
 
   // Write all files to disk
@@ -63,19 +66,20 @@ Dir::~Dir() {}
 // ============================================================================
 // File Implementation
 // ============================================================================
-
 void File::write_to_disk() const {
   std::string file_path = this->path_.to_string();
-  FILE *file = fopen(file_path.c_str(), "w");
+  std::ofstream file(file_path);
 
   if (!file) {
     throw std::runtime_error("Failed to create file: " + file_path);
   }
 
-  fwrite(this->content_.c_str(), sizeof(char), this->content_.size(), file);
-  fclose(file);
+  file.write(this->content_.c_str(),
+             static_cast<std::streamsize>(this->content_.size()));
+
+  if (!file) {
+    throw std::runtime_error("Failed to write complete content to file: " +
+                             file_path);
+  }
 }
-
-File::~File() {}
-
 } // namespace fs

@@ -119,6 +119,7 @@ int main(int argc, char **argv) {
     const auto *preset = preset_manager.get_preset(preset_use_name);
     if (!preset) {
       std::cerr << "Preset not found: " << preset_use_name << '\n';
+      result = 1;
       return;
     }
     preset->use();
