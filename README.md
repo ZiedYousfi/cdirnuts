@@ -49,7 +49,7 @@ cmake --build build
 ### Requirements
 
 - CMake 3.13 or higher
-- C23 compatible compiler (GCC, Clang)
+- C++23 compatible compiler (GCC, Clang)
 - Lua 5.4 (automatically managed via vcpkg)
 - vcpkg (for dependency management)
 
