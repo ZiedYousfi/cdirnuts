@@ -128,11 +128,6 @@ target_link_libraries(${PROJECT_NAME}
     sol2::sol2
 )
 
-target_include_directories(${PROJECT_NAME}
-  PRIVATE
-    ${LUA_INCLUDE_DIR}
-)
-
 ################################################################################
 # Executable Target
 ################################################################################

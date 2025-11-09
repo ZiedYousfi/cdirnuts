@@ -142,11 +142,11 @@ TEST_F(FsTest, DirWithFiles) {
 
   fs::Dir dir(dir_path);
 
-  auto *file1 = new fs::File(dir_path + "/file1.txt", "Content 1");
-  auto *file2 = new fs::File(dir_path + "/file2.txt", "Content 2");
+  auto file1 = fs::File(dir_path + "/file1.txt", "Content 1");
+  auto file2 = fs::File(dir_path + "/file2.txt", "Content 2");
 
-  dir.add_file(file1);
-  dir.add_file(file2);
+  dir.add_file(std::move(file1));
+  dir.add_file(std::move(file2));
 
   dir.write_to_disk();
 
@@ -162,11 +162,11 @@ TEST_F(FsTest, DirWithSubdirs) {
 
   fs::Dir dir(dir_path);
 
-  auto *subdir1 = new fs::Dir(dir_path + "/subdir1");
-  auto *subdir2 = new fs::Dir(dir_path + "/subdir2");
+  auto subdir1 = fs::Dir(dir_path + "/subdir1");
+  auto subdir2 = fs::Dir(dir_path + "/subdir2");
 
-  dir.add_subdir(subdir1);
-  dir.add_subdir(subdir2);
+  dir.add_subdir(std::move(subdir1));
+  dir.add_subdir(std::move(subdir2));
 
   dir.write_to_disk();
 
@@ -183,14 +183,13 @@ TEST_F(FsTest, NestedDirStructure) {
   fs::Dir root(dir_path);
 
   // Create nested structure
-  auto *subdir = new fs::Dir(dir_path + "/subdir");
-  auto *file_in_root = new fs::File(dir_path + "/root.txt", "Root file");
-  auto *file_in_subdir =
-      new fs::File(dir_path + "/subdir/sub.txt", "Subdir file");
+  auto subdir = fs::Dir(dir_path + "/subdir");
+  auto file_in_root = fs::File(dir_path + "/root.txt", "Root file");
+  auto file_in_subdir = fs::File(dir_path + "/subdir/sub.txt", "Subdir file");
 
-  subdir->add_file(file_in_subdir);
-  root.add_subdir(subdir);
-  root.add_file(file_in_root);
+  subdir.add_file(std::move(file_in_subdir));
+  root.add_subdir(std::move(subdir));
+  root.add_file(std::move(file_in_root));
 
   root.write_to_disk();
 
@@ -207,22 +206,21 @@ TEST_F(FsTest, ComplexDirStructure) {
   fs::Dir root(dir_path);
 
   // Create a complex structure: root/src, root/include, root/tests
-  auto *src_dir = new fs::Dir(dir_path + "/src");
-  auto *include_dir = new fs::Dir(dir_path + "/include");
-  auto *tests_dir = new fs::Dir(dir_path + "/tests");
+  auto src_dir = fs::Dir(dir_path + "/src");
+  auto include_dir = fs::Dir(dir_path + "/include");
+  auto tests_dir = fs::Dir(dir_path + "/tests");
 
-  auto *main_cpp = new fs::File(dir_path + "/src/main.cpp", "int main() {}");
-  auto *header_h = new fs::File(dir_path + "/include/header.h", "#pragma once");
-  auto *test_cpp =
-      new fs::File(dir_path + "/tests/test.cpp", "#include <gtest/gtest.h>");
+  auto main_cpp = fs::File(dir_path + "/src/main.cpp", "int main() {}");
+  auto header_h = fs::File(dir_path + "/include/header.h", "#pragma once");
+  auto test_cpp = fs::File(dir_path + "/tests/test.cpp", "#include <gtest/gtest.h>");
 
-  src_dir->add_file(main_cpp);
-  include_dir->add_file(header_h);
-  tests_dir->add_file(test_cpp);
+  src_dir.add_file(std::move(main_cpp));
+  include_dir.add_file(std::move(header_h));
+  tests_dir.add_file(std::move(test_cpp));
 
-  root.add_subdir(src_dir);
-  root.add_subdir(include_dir);
-  root.add_subdir(tests_dir);
+  root.add_subdir(std::move(src_dir));
+  root.add_subdir(std::move(include_dir));
+  root.add_subdir(std::move(tests_dir));
 
   root.write_to_disk();
 

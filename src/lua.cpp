@@ -7,41 +7,46 @@ LuaEngine::LuaEngine() {
 }
 
 void LuaEngine::register_api() {
+  // Register usertypes for fs::Dir and fs::File to enable Sol2 to handle
+  // shared_ptr instances
+  lua_state_.new_usertype<fs::Dir>("Dir");
+  lua_state_.new_usertype<fs::File>("File");
+
   auto cdirnuts = lua_state_.create_table("cdirnuts");
 
   cdirnuts["getCWD"] = []() {
     return std::filesystem::current_path().string();
   };
 
-  cdirnuts["create_virtual_dir"] = [](const std::string &path) {
-    auto dir = new fs::Dir(path.c_str());
-    if (!dir)
-      throw std::runtime_error("Failed to create Dir");
-    return dir;
+  // Modified factories to return std::shared_ptr for managed ownership
+  cdirnuts["create_virtual_dir"] =
+      [](const std::string &path) -> std::shared_ptr<fs::Dir> {
+    return std::make_shared<fs::Dir>(path);
   };
 
-  cdirnuts["create_virtual_file"] = [](const std::string &name,
-                                       const std::string &content) {
-    auto file = new fs::File(name.c_str(), content.c_str());
-    if (!file)
-      throw std::runtime_error("Failed to create File");
-    return file;
+  cdirnuts["create_virtual_file"] =
+      [](const std::string &name,
+         const std::string &content) -> std::shared_ptr<fs::File> {
+    return std::make_shared<fs::File>(name, content);
   };
 
-  cdirnuts["write_virtual_file"] = [](const fs::File &file) {
-    file.write_to_disk();
+  // Updated bindings to accept std::shared_ptr for consistency
+  cdirnuts["write_virtual_file"] = [](std::shared_ptr<fs::File> file) {
+    file->write_to_disk();
   };
 
-  cdirnuts["write_virtual_dir"] = [](const fs::Dir &dir) {
-    dir.write_to_disk();
+  cdirnuts["write_virtual_dir"] = [](std::shared_ptr<fs::Dir> dir) {
+    dir->write_to_disk();
   };
 
-  cdirnuts["append_subdir"] = [](fs::Dir &parent, fs::Dir *child) {
-    parent.add_subdir(child);
+  cdirnuts["append_subdir"] = [](std::shared_ptr<fs::Dir> parent,
+                                 std::shared_ptr<fs::Dir> child) {
+    parent->add_subdir(std::move(*child));
   };
 
-  cdirnuts["append_file"] = [](fs::Dir &parent, fs::File *file) {
-    parent.add_file(file);
+  cdirnuts["append_file"] = [](std::shared_ptr<fs::Dir> parent,
+                               std::shared_ptr<fs::File> file) {
+    parent->add_file(std::move(*file));
   };
 
   cdirnuts["execute_shell_command"] = [](const std::string &command) {

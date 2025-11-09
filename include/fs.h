@@ -1,7 +1,5 @@
 #pragma once
 
-#include <algorithm>
-#include <stdexcept>
 #include <string>
 #include <vector>
 #ifdef _WIN32
@@ -54,10 +52,10 @@ public:
   Dir(const std::string &path) : path_(path) {}
   /// @brief Add a sub-directory to the current directory. Takes ownership.
   /// @param dir
-  void add_subdir(Dir *dir) noexcept;
+  void add_subdir(Dir &&dir) noexcept;
   /// @brief Add a file to the current directory. Takes ownership.
   /// @param file
-  void add_file(File *file) noexcept;
+  void add_file(File &&file) noexcept;
   void write_to_disk() const;
   ~Dir();
 };

@@ -114,8 +114,14 @@ int main(int argc, char **argv) {
   auto *preset_use = preset_cmd->add_subcommand("use", "Use a preset by name");
   std::string preset_use_name;
   preset_use->add_option("name", preset_use_name, "Preset name")->required();
-  preset_use->callback(
-      [&]() { preset_manager.get_preset(preset_use_name)->use(); });
+  preset_use->callback([&]() {
+    const auto *preset = preset_manager.get_preset(preset_use_name);
+    if (!preset) {
+      std::cerr << "Preset not found: " << preset_use_name << '\n';
+      return;
+    }
+    preset->use();
+  });
 
   // Default behavior (no args)
   app.callback([&]() {
