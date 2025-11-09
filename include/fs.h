@@ -1,26 +1,23 @@
 #pragma once
 
+#include <filesystem>
 #include <string>
 #include <vector>
-#ifdef _WIN32
-#include <windows.h>
-#else
-#include <sys/stat.h>
-#include <sys/types.h>
-#endif
 
 namespace fs {
 
 class Path {
 private:
-  std::string path_;
+  std::filesystem::path path_;
 
 public:
-  Path() : path_("") {}
+  Path() : path_() {}
   Path(const std::string &path) : path_(path) {}
+  Path(const std::filesystem::path &path) : path_(path) {}
   Path from_parent(const std::string &parent, const std::string &name) const;
   ~Path();
-  std::string to_string() const { return path_; }
+  std::string to_string() const { return path_.string(); }
+  std::filesystem::path to_path() const { return path_; }
 };
 
 class File {
@@ -29,7 +26,7 @@ private:
   std::string content_;
 
 public:
-  File() : path_(""), content_("") {}
+  File() : path_(std::filesystem::path()), content_("") {}
   File(const Path &path, const std::string &content)
       : path_(path), content_(content) {}
   File(const std::string &path, const std::string &content)
@@ -47,7 +44,7 @@ private:
   std::vector<File> files_;
 
 public:
-  Dir() : path_("") {}
+  Dir() : path_(std::filesystem::path()) {}
   Dir(const Path &path) : path_(path) {}
   Dir(const std::string &path) : path_(path) {}
   /// @brief Add a sub-directory to the current directory. Takes ownership.

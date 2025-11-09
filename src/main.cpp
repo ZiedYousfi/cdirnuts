@@ -2,6 +2,7 @@
 #include "../include/lua.h"
 #include "../include/presets.h"
 #include <CLI/CLI.hpp>
+#include <filesystem>
 #include <iostream>
 
 /**
@@ -20,15 +21,18 @@ int main(int argc, char **argv) {
 
   Presets::PresetManager preset_manager;
 
-  auto file_path =
-      std::getenv("DIRNUTS_DIR_PATH")
-          ? std::string(std::getenv("DIRNUTS_DIR_PATH")) + "/presets.cdndb"
-          : "./presets.cdndb";
+  std::filesystem::path file_path;
+  if (std::getenv("DIRNUTS_DIR_PATH")) {
+    file_path = std::filesystem::path(std::getenv("DIRNUTS_DIR_PATH")) /
+                "presets.cdndb";
+  } else {
+    file_path = "./presets.cdndb";
+  }
 
   if (std::ifstream(file_path)) {
     try {
       preset_manager =
-          Presets::PresetManager::load_presets_from_file(file_path);
+          Presets::PresetManager::load_presets_from_file(file_path.string());
     } catch (const std::exception &e) {
       std::cerr << e.what() << '\n';
     }
@@ -89,7 +93,7 @@ int main(int argc, char **argv) {
     Presets::Preset new_preset(preset_add_name, preset_add_path);
     preset_manager.add_preset(new_preset);
     try {
-      preset_manager.save_presets_to_file(file_path);
+      preset_manager.save_presets_to_file(file_path.string());
       std::cout << "Preset added successfully.\n";
     } catch (const std::exception &e) {
       std::cerr << "Error saving presets: " << e.what() << '\n';
@@ -104,7 +108,7 @@ int main(int argc, char **argv) {
   preset_remove->callback([&]() {
     preset_manager.remove_preset(preset_remove_name);
     try {
-      preset_manager.save_presets_to_file(file_path);
+      preset_manager.save_presets_to_file(file_path.string());
       std::cout << "Preset removed successfully.\n";
     } catch (const std::exception &e) {
       std::cerr << "Error saving presets: " << e.what() << '\n';

@@ -1,4 +1,5 @@
 #include "../include/fs.h"
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 
@@ -10,11 +11,8 @@ namespace fs {
 
 Path Path::from_parent(const std::string &parent,
                        const std::string &name) const {
-  std::string combined = parent;
-  if (!combined.empty() && combined.back() != '/') {
-    combined += '/';
-  }
-  combined += name;
+  std::filesystem::path combined(parent);
+  combined /= name;
   return Path(combined);
 }
 
@@ -34,11 +32,15 @@ void Dir::add_file(File &&file) noexcept {
 
 void Dir::write_to_disk() const {
 
-  std::string dir_path = this->path_.to_string();
-  // Create the directory
-  if (mkdir(dir_path.c_str(), 0755) != 0) {
-    if (errno != EEXIST) {
-      throw std::runtime_error("Failed to create directory: " + dir_path);
+  std::filesystem::path dir_path = this->path_.to_path();
+
+  // Create the directory and all parent directories if needed
+  std::error_code ec;
+  if (!std::filesystem::create_directories(dir_path, ec) && ec) {
+    // Check if it failed for a reason other than already existing
+    if (!std::filesystem::exists(dir_path)) {
+      throw std::runtime_error("Failed to create directory: " +
+                               dir_path.string() + " - " + ec.message());
     }
   }
 
@@ -67,11 +69,11 @@ Dir::~Dir() {}
 // File Implementation
 // ============================================================================
 void File::write_to_disk() const {
-  std::string file_path = this->path_.to_string();
+  std::filesystem::path file_path = this->path_.to_path();
   std::ofstream file(file_path);
 
   if (!file) {
-    throw std::runtime_error("Failed to create file: " + file_path);
+    throw std::runtime_error("Failed to create file: " + file_path.string());
   }
 
   file.write(this->content_.c_str(),
@@ -79,7 +81,7 @@ void File::write_to_disk() const {
 
   if (!file) {
     throw std::runtime_error("Failed to write complete content to file: " +
-                             file_path);
+                             file_path.string());
   }
 }
 
