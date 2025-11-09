@@ -13,7 +13,7 @@ Path Path::from_parent(const std::string &parent,
                        const std::string &name) const {
   std::filesystem::path combined(parent);
   combined /= name;
-  return Path(combined);
+  return Path(combined.string());
 }
 
 Path::~Path() {}

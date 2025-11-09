@@ -13,7 +13,6 @@ private:
 public:
   Path() : path_() {}
   Path(const std::string &path) : path_(path) {}
-  Path(const std::filesystem::path &path) : path_(path) {}
   Path from_parent(const std::string &parent, const std::string &name) const;
   ~Path();
   std::string to_string() const { return path_.string(); }
