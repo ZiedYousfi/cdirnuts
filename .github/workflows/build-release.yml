@@ -91,14 +91,14 @@ jobs:
 
       - name: Configure with CMake
         run: |
-          cmake --preset=release -DVCPKG_HOST_TRIPLET=${{ matrix.host_triplet }} -DVCPKG_TARGET_TRIPLET=${{ matrix.target_triplet }}
+          cmake --preset=vcpkg-release -DVCPKG_HOST_TRIPLET=${{ matrix.host_triplet }} -DVCPKG_TARGET_TRIPLET=${{ matrix.target_triplet }}
         shell: bash
         env:
           CC: ${{ matrix.setup_cross_compile && 'aarch64-linux-gnu-gcc' || '' }}
           CXX: ${{ matrix.setup_cross_compile && 'aarch64-linux-gnu-g++' || '' }}
 
       - name: Build
-        run: cmake --build build --preset release -- -j$(nproc)
+        run: cmake --build build --preset vcpkg-release -- -j$(nproc)
         shell: bash
 
       - name: Create artifact directory
