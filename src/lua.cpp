@@ -1,4 +1,8 @@
 #include "../include/lua.h"
+#include "./fs.h"
+#include <filesystem>
+#include <iostream>
+#include <memory>
 
 namespace Lua {
 LuaEngine::LuaEngine() {

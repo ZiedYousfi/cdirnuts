@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../include/lua.h"
-#include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>

@@ -1,4 +1,6 @@
 #include "../include/presets.h"
+#include "../include/lua.h"
+#include <fstream>
 
 namespace Presets {
 // ============================================================================
