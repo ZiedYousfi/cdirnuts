@@ -21,7 +21,7 @@ file(WRITE "${OUTPUT_FILE}"
 "// Auto-generated file - DO NOT EDIT
 // Generated from: ${LUA_FILE}
 
-#include \"../include/default_lua_script.h\"
+#include \"default_lua_script.h\"
 
 const char *DEFAULT_LUA_SCRIPT =
 \"${LUA_CONTENT}\";
