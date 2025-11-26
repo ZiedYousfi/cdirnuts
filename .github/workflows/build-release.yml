@@ -70,6 +70,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup MSVC (Windows)
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Set Windows compiler environment
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          echo "CC=cl" >> $GITHUB_ENV
+          echo "CXX=cl" >> $GITHUB_ENV
+
       - name: Setup Linux ARM64 cross-compilation
         if: matrix.setup_cross_compile == true
         run: |

@@ -64,6 +64,17 @@ jobs:
         if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.platform == 'all' || matrix.platform == github.event.inputs.platform }}
         uses: actions/checkout@v4
 
+      - name: Setup MSVC (Windows)
+        if: ${{ runner.os == 'Windows' && (github.event_name != 'workflow_dispatch' || github.event.inputs.platform == 'all' || matrix.platform == github.event.inputs.platform) }}
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Set Windows compiler environment
+        if: ${{ runner.os == 'Windows' && (github.event_name != 'workflow_dispatch' || github.event.inputs.platform == 'all' || matrix.platform == github.event.inputs.platform) }}
+        shell: bash
+        run: |
+          echo "CC=cl" >> $GITHUB_ENV
+          echo "CXX=cl" >> $GITHUB_ENV
+
       - name: Setup Linux ARM64 cross-compilation
         if: ${{ (github.event_name != 'workflow_dispatch' || github.event.inputs.platform == 'all' || matrix.platform == github.event.inputs.platform) && matrix.setup_cross_compile == true && matrix.os == 'ubuntu-latest' }}
         run: |
