@@ -1,49 +1,108 @@
-# This starter workflow is for a CMake project running on a single platform. There is a different starter workflow if you need cross-platform coverage.
-# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-multi-platform.yml
-name: CMake on a single platform
+# Tests for the platforms used by release builds
+name: Test Release Platforms
 
 on:
   push:
     branches: ["main"]
   pull_request:
     branches: ["main"]
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Which platform to run (all, linux-x64, linux-arm64, macos-x64, macos-arm64, windows-x64)'
+        required: false
+        default: 'all'
 
 env:
-  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
 
 jobs:
-  build:
-    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
-    # You can convert this to a matrix build if you need cross-platform coverage.
-    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-    runs-on: ubuntu-latest
+  build-and-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            triplet: x64-linux
+            platform: linux-x64
+            host_triplet: x64-linux
+            target_triplet: x64-linux
+            setup_cross_compile: false
+
+          - os: ubuntu-latest
+            triplet: arm64-linux
+            platform: linux-arm64
+            host_triplet: x64-linux
+            target_triplet: arm64-linux
+            setup_cross_compile: true
+
+          - os: macos-13
+            triplet: x64-osx
+            platform: macos-x64
+            host_triplet: x64-osx
+            target_triplet: x64-osx
+            setup_cross_compile: false
+
+          - os: macos-14
+            triplet: arm64-osx
+            platform: macos-arm64
+            host_triplet: arm64-osx
+            target_triplet: arm64-osx
+            setup_cross_compile: false
+
+          - os: windows-latest
+            triplet: x64-windows
+            platform: windows-x64
+            host_triplet: x64-windows
+            target_triplet: x64-windows
+            setup_cross_compile: false
+
+    # Note: Step-level conditions below decide whether a matrix job executes
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.platform == 'all' || matrix.platform == github.event.inputs.platform }}
+        uses: actions/checkout@v4
 
-      - name: Configure CMake (build + tests)
-        # Configure CMake in a 'build' subdirectory and enable tests so CI builds the test target.
+      - name: Setup Linux ARM64 cross-compilation
+        if: ${{ (github.event_name != 'workflow_dispatch' || github.event.inputs.platform == 'all' || matrix.platform == github.event.inputs.platform) && matrix.setup_cross_compile == true && matrix.os == 'ubuntu-latest' }}
         run: |
-          # Ensure Lua development files are available on the Ubuntu runner so CMake's FindLua can locate headers/libs
           sudo apt-get update
-          sudo apt-get install -y liblua5.4-dev
-          # Enable BUILD_TESTS so the test executable is created by the build
-          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_TESTS=ON
+          sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
 
-      - name: Build
-        # Build your program with the given configuration
-        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      - name: Set up CMake
+        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.platform == 'all' || matrix.platform == github.event.inputs.platform }}
+        uses: jwlawson/actions-setup-cmake@v1
+        with:
+          cmake-version: '3.27.x'
 
-      - name: Build
-        # Build your program with the given configuration (explicit build step so tests are available)
-        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      - name: Set up Ninja
+        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.platform == 'all' || matrix.platform == github.event.inputs.platform }}
+        uses: seanmiddleditch/gha-setup-ninja@v5
 
-      - name: Test
-        working-directory: ${{github.workspace}}/build
-        # Execute tests defined by the CMake configuration and print output on failure for diagnostics
+      - name: Setup vcpkg
+        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.platform == 'all' || matrix.platform == github.event.inputs.platform }}
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgDirectory: ${{ github.workspace }}/../vcpkg
+
+      - name: Configure with CMake
+        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.platform == 'all' || matrix.platform == github.event.inputs.platform }}
         run: |
-          # Show available tests
-          ctest -N -C ${{env.BUILD_TYPE}}
-          # Run tests with output on failure andVerbosity; exit non-zero on failure so CI fails
-          ctest -C ${{env.BUILD_TYPE}} --output-on-failure
+          cmake --preset=vcpkg-release -DVCPKG_HOST_TRIPLET=${{ matrix.host_triplet }} -DVCPKG_TARGET_TRIPLET=${{ matrix.target_triplet }}
+        env:
+          CC: ${{ matrix.setup_cross_compile && 'aarch64-linux-gnu-gcc' || '' }}
+          CXX: ${{ matrix.setup_cross_compile && 'aarch64-linux-gnu-g++' || '' }}
+
+      - name: Build
+        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.platform == 'all' || matrix.platform == github.event.inputs.platform }}
+        run: cmake --build build --preset release
+
+      - name: Test (skip cross-compiled targets)
+        if: ${{ (github.event_name != 'workflow_dispatch' || github.event.inputs.platform == 'all' || matrix.platform == github.event.inputs.platform) && matrix.setup_cross_compile != true }}
+        working-directory: ${{ github.workspace }}/build
+        run: |
+          ctest -N -C ${{ env.BUILD_TYPE }}
+          ctest -C ${{ env.BUILD_TYPE }} --output-on-failure
+
+
