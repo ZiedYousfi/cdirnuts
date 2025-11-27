@@ -70,6 +70,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup MSVC (Windows)
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Set Windows compiler environment
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          echo "CC=cl" >> $GITHUB_ENV
+          echo "CXX=cl" >> $GITHUB_ENV
+
       - name: Setup Linux ARM64 cross-compilation
         if: matrix.setup_cross_compile == true
         run: |
@@ -91,14 +102,14 @@ jobs:
 
       - name: Configure with CMake
         run: |
-          cmake --preset=vcpkg -DVCPKG_HOST_TRIPLET=${{ matrix.host_triplet }} -DVCPKG_TARGET_TRIPLET=${{ matrix.target_triplet }}
+          cmake --preset=vcpkg-release -DVCPKG_HOST_TRIPLET=${{ matrix.host_triplet }} -DVCPKG_TARGET_TRIPLET=${{ matrix.target_triplet }}
         shell: bash
         env:
           CC: ${{ matrix.setup_cross_compile && 'aarch64-linux-gnu-gcc' || '' }}
           CXX: ${{ matrix.setup_cross_compile && 'aarch64-linux-gnu-g++' || '' }}
 
       - name: Build
-        run: cmake --build build --config Release
+        run: cmake --build build --preset release
         shell: bash
 
       - name: Create artifact directory

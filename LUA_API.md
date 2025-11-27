@@ -1,6 +1,6 @@
 # cdirnuts Lua API Documentation
 
-This document describes the Lua API bindings for the cdirnuts C library, which provides functionality for creating and managing directory structures programmatically.
+This document describes the Lua API bindings for the cdirnuts C++ library, which provides functionality for creating and managing directory structures programmatically.
 
 ## Table of Contents
 
@@ -8,8 +8,7 @@ This document describes the Lua API bindings for the cdirnuts C library, which p
 2. [API Reference](#api-reference)
    - [Directory Functions](#directory-functions)
    - [File Functions](#file-functions)
-   - [Path Functions](#path-functions)
-   - [Command Functions](#command-functions)
+   - [Utility Functions](#utility-functions)
 3. [Examples](#examples)
 4. [Memory Management](#memory-management)
 
@@ -17,10 +16,10 @@ This document describes the Lua API bindings for the cdirnuts C library, which p
 
 The cdirnuts Lua API allows you to:
 
-- Create complex directory structures
+- Create complex directory structures in memory
 - Generate files with content
-- Parse and manipulate file paths
-- Execute shell commands
+- Build hierarchical file system structures
+- Write entire directory trees to disk in one operation
 
 All functions are available under the global `cdirnuts` table.
 
@@ -28,9 +27,9 @@ All functions are available under the global `cdirnuts` table.
 
 ### Directory Functions
 
-#### `cdirnuts.allocDir(path)`
+#### `cdirnuts.create_virtual_dir(path)`
 
-Allocates a new directory object.
+Creates a virtual directory object in memory. This directory is not written to disk until you call `write_virtual_dir()`.
 
 **Parameters:**
 
@@ -38,43 +37,39 @@ Allocates a new directory object.
 
 **Returns:**
 
-- Directory object on success
-- `nil, error_message` on failure
+- Directory userdata object
 
 **Example:**
 
 ```lua
-local dir = cdirnuts.allocDir("./my_project")
-if not dir then
-    print("Failed to allocate directory")
-end
+local dir = cdirnuts.create_virtual_dir("./my_project")
 ```
 
-#### `cdirnuts.createDir(dir)`
+**Note:** This function throws a Lua error if directory creation fails.
 
-Creates the directory and all its subdirectories and files on the filesystem.
+#### `cdirnuts.write_virtual_dir(dir)`
+
+Writes the directory and all its subdirectories and files to the filesystem.
 
 **Parameters:**
 
-- `dir` (Directory): A directory object created with `allocDir`
+- `dir` (Directory): A directory object created with `create_virtual_dir`
 
 **Returns:**
 
-- `true` on success
-- `false, error_message` on failure
+- Nothing (throws on error)
 
 **Example:**
 
 ```lua
-local dir = cdirnuts.allocDir("./my_project")
-if cdirnuts.createDir(dir) then
-    print("Directory created successfully!")
-end
+local dir = cdirnuts.create_virtual_dir("./my_project")
+-- ... add files and subdirs ...
+cdirnuts.write_virtual_dir(dir)
 ```
 
-#### `cdirnuts.addSubDirToDir(parentDir, childDir)`
+#### `cdirnuts.append_subdir(parentDir, childDir)`
 
-Adds a subdirectory to a parent directory. **Important:** This transfers ownership of the child directory to the parent. After calling this function, you should not use or free the child directory object.
+Adds a subdirectory to a parent directory. **Important:** This transfers ownership of the child directory to the parent. After calling this function, the child directory object is moved and should not be used again.
 
 **Parameters:**
 
@@ -83,169 +78,108 @@ Adds a subdirectory to a parent directory. **Important:** This transfers ownersh
 
 **Returns:**
 
-- `true` on success
-- `false, error_message` on failure
+- Nothing
 
 **Example:**
 
 ```lua
-local parent = cdirnuts.allocDir("./project")
-local child = cdirnuts.allocDir("./project/src")
+local parent = cdirnuts.create_virtual_dir("./project")
+local child = cdirnuts.create_virtual_dir("./project/src")
 
-if cdirnuts.addSubDirToDir(parent, child) then
-    print("Subdirectory added")
-    -- Note: 'child' should not be used after this point
-end
+cdirnuts.append_subdir(parent, child)
+-- Note: 'child' has been moved and should not be used after this point
 ```
 
 ### File Functions
 
-#### `cdirnuts.createFile(path, content)`
+#### `cdirnuts.create_virtual_file(path, content)`
 
-Creates a file object (not written to disk yet).
+Creates a virtual file object in memory with the specified content.
 
 **Parameters:**
 
 - `path` (string): The file path
-- `content` (string or nil): The file content (can be nil for empty file)
+- `content` (string): The file content
 
 **Returns:**
 
-- File object on success
-- `nil, error_message` on failure
+- File userdata object
 
 **Example:**
 
 ```lua
-local file = cdirnuts.createFile(
+local file = cdirnuts.create_virtual_file(
     "./project/README.md",
     "# My Project\n\nProject description here."
 )
 ```
 
-#### `cdirnuts.writeFile(file)`
+**Note:** This function throws a Lua error if file creation fails.
+
+#### `cdirnuts.write_virtual_file(file)`
 
 Writes a file object directly to the filesystem.
 
 **Parameters:**
 
-- `file` (File): A file object created with `createFile`
+- `file` (File): A file object created with `create_virtual_file`
 
 **Returns:**
 
-- `true` on success
-- `false, error_message` on failure
+- Nothing (throws on error)
 
 **Example:**
 
 ```lua
-local file = cdirnuts.createFile("./test.txt", "Hello, World!")
-if cdirnuts.writeFile(file) then
-    print("File written successfully!")
-end
+local file = cdirnuts.create_virtual_file("./test.txt", "Hello, World!")
+cdirnuts.write_virtual_file(file)
 ```
 
-#### `cdirnuts.addFileToDir(dir, file)`
+#### `cdirnuts.append_file(dir, file)`
 
-Adds a file to a directory. The file will be created when `createDir` is called on the directory. This function makes a deep copy of the file, so you retain ownership of the original file object.
+Adds a file to a directory. The file will be created when `write_virtual_dir` is called on the directory. **Important:** This transfers ownership of the file to the directory.
 
 **Parameters:**
 
 - `dir` (Directory): The directory object
-- `file` (File): The file object (caller retains ownership)
+- `file` (File): The file object (ownership transferred)
 
 **Returns:**
 
-- `true` on success
-- `false, error_message` on failure
+- Nothing
 
 **Example:**
 
 ```lua
-local dir = cdirnuts.allocDir("./project")
-local file = cdirnuts.createFile("./project/main.c", "#include <stdio.h>\n\nint main() { return 0; }")
+local dir = cdirnuts.create_virtual_dir("./project")
+local file = cdirnuts.create_virtual_file("./project/main.c", "#include <stdio.h>\n\nint main() { return 0; }")
 
-if cdirnuts.addFileToDir(dir, file) then
-    print("File added to directory")
-    -- Note: 'file' can still be used after this
-end
+cdirnuts.append_file(dir, file)
+-- Note: 'file' has been moved and should not be used after this
 ```
 
-### Path Functions
+### Utility Functions
 
-#### `cdirnuts.parsePath(path)`
+#### `cdirnuts.getCWD()`
 
-Parses a path string into its components.
+Returns the current working directory.
 
 **Parameters:**
 
-- `path` (string): The path to parse
+- None
 
 **Returns:**
 
-- PathInfo object on success with methods:
-  - `getName()`: Returns the name component
-  - `getParentPath()`: Returns the parent path
-  - `isDirectory()`: Returns true if path ends with `/`
-- `nil, error_message` on failure
+- String containing the current working directory path
 
 **Example:**
 
 ```lua
-local info = cdirnuts.parsePath("/home/user/projects/myapp/")
-if info then
-    print("Name: " .. info:getName())
-    print("Parent: " .. info:getParentPath())
-    print("Is directory: " .. tostring(info:isDirectory()))
-end
+local cwd = cdirnuts.getCWD()
+print("Working in: " .. cwd)
 ```
 
-#### `cdirnuts.constructPath(dirName, parentDir)`
-
-Constructs a full path by combining directory name and parent path.
-
-**Parameters:**
-
-- `dirName` (string): The directory or file name
-- `parentDir` (string): The parent directory path
-
-**Returns:**
-
-- Full path string on success
-- `nil, error_message` on failure
-
-**Example:**
-
-```lua
-local fullPath = cdirnuts.constructPath("myfile.txt", "/home/user")
--- Returns: "/home/user/myfile.txt"
-```
-
-#### `cdirnuts.copySubstring(source, start, end)`
-
-Copies a substring from a source string.
-
-**Parameters:**
-
-- `source` (string): The source string
-- `start` (integer): Start index (0-based, inclusive)
-- `end` (integer): End index (0-based, inclusive)
-
-**Returns:**
-
-- Substring on success
-- `nil, error_message` on failure
-
-**Example:**
-
-```lua
-local sub = cdirnuts.copySubstring("HelloWorld", 0, 4)
--- Returns: "Hello"
-```
-
-### Command Functions
-
-#### `cdirnuts.executeCommand(command)`
+#### `cdirnuts.execute_shell_command(command)`
 
 Executes a shell command.
 
@@ -255,16 +189,16 @@ Executes a shell command.
 
 **Returns:**
 
-- `true` on success (exit code 0)
-- `false, error_message` on failure
+- Nothing on success (throws on error)
 
 **Example:**
 
 ```lua
-if cdirnuts.executeCommand("git init") then
-    print("Git repository initialized")
-end
+cdirnuts.execute_shell_command("git init")
+print("Git repository initialized")
 ```
+
+**Note:** This function throws a Lua error if the command fails (non-zero exit code).
 
 ## Examples
 
@@ -272,141 +206,219 @@ end
 
 ```lua
 -- Create a basic project structure
-local project = cdirnuts.allocDir("./hello_world")
+local project = cdirnuts.create_virtual_dir("./hello_world")
 
-local readme = cdirnuts.createFile(
+local readme = cdirnuts.create_virtual_file(
     "./hello_world/README.md",
     "# Hello World\n\nA simple project."
 )
 
-cdirnuts.addFileToDir(project, readme)
-
-if cdirnuts.createDir(project) then
-    print("Project created!")
-end
+cdirnuts.append_file(project, readme)
+cdirnuts.write_virtual_dir(project)
+print("Project created!")
 ```
 
 ### Example 2: Nested Directories with Files
 
 ```lua
+-- Get current directory
+local cwd = cdirnuts.getCWD()
+
 -- Create parent directory
-local app = cdirnuts.allocDir("./myapp")
+local app = cdirnuts.create_virtual_dir(cwd .. "/myapp")
 
 -- Create subdirectories
-local src = cdirnuts.allocDir("./myapp/src")
-local include = cdirnuts.allocDir("./myapp/include")
+local src = cdirnuts.create_virtual_dir(cwd .. "/myapp/src")
+local include = cdirnuts.create_virtual_dir(cwd .. "/myapp/include")
 
 -- Create files
-local mainFile = cdirnuts.createFile(
-    "./myapp/src/main.c",
+local mainFile = cdirnuts.create_virtual_file(
+    cwd .. "/myapp/src/main.c",
     "#include <stdio.h>\n\nint main() {\n    printf(\"Hello!\\n\");\n    return 0;\n}\n"
 )
 
-local headerFile = cdirnuts.createFile(
-    "./myapp/include/app.h",
+local headerFile = cdirnuts.create_virtual_file(
+    cwd .. "/myapp/include/app.h",
     "#pragma once\n\nvoid app_init(void);\n"
 )
 
 -- Add files to directories
-cdirnuts.addFileToDir(src, mainFile)
-cdirnuts.addFileToDir(include, headerFile)
+cdirnuts.append_file(src, mainFile)
+cdirnuts.append_file(include, headerFile)
 
 -- Build directory tree
-cdirnuts.addSubDirToDir(app, src)
-cdirnuts.addSubDirToDir(app, include)
+cdirnuts.append_subdir(app, src)
+cdirnuts.append_subdir(app, include)
 
--- Create everything
-cdirnuts.createDir(app)
+-- Create everything on disk
+cdirnuts.write_virtual_dir(app)
 ```
 
-### Example 3: Using Path Functions
+### Example 3: Complete C++ Project
 
 ```lua
--- Parse a path
-local path = "/home/user/documents/report.pdf"
-local info = cdirnuts.parsePath(path)
+local cwd = cdirnuts.getCWD()
+local projectName = "my_cpp_project"
 
-print("File name: " .. info:getName())
-print("Directory: " .. info:getParentPath())
+-- Create root and subdirectories
+local root = cdirnuts.create_virtual_dir(cwd .. "/" .. projectName)
+local src = cdirnuts.create_virtual_dir(cwd .. "/" .. projectName .. "/src")
+local include = cdirnuts.create_virtual_dir(cwd .. "/" .. projectName .. "/include")
 
--- Construct new path
-local newPath = cdirnuts.constructPath("backup.pdf", info:getParentPath())
-print("New path: " .. newPath)
-```
+-- Create source file
+local mainCpp = cdirnuts.create_virtual_file(
+    cwd .. "/" .. projectName .. "/src/main.cpp",
+    [[#include <iostream>
 
-### Example 4: Running Commands
-
-```lua
--- Create a git repository
-local repo = cdirnuts.allocDir("./my_repo")
-
-local gitignore = cdirnuts.createFile(
-    "./my_repo/.gitignore",
-    "*.o\n*.exe\nbuild/\n"
+int main() {
+    std::cout << "Hello, World!" << std::endl;
+    return 0;
+}
+]]
 )
 
-cdirnuts.addFileToDir(repo, gitignore)
-cdirnuts.createDir(repo)
+-- Create CMakeLists.txt
+local cmake = cdirnuts.create_virtual_file(
+    cwd .. "/" .. projectName .. "/CMakeLists.txt",
+    [[cmake_minimum_required(VERSION 3.15)
+project(my_cpp_project)
 
--- Initialize git
-if cdirnuts.executeCommand("cd ./my_repo && git init") then
-    print("Git repository initialized!")
-end
+set(CMAKE_CXX_STANDARD 23)
+
+add_executable(my_cpp_project src/main.cpp)
+]]
+)
+
+-- Create README
+local readme = cdirnuts.create_virtual_file(
+    cwd .. "/" .. projectName .. "/README.md",
+    "# " .. projectName .. "\n\nA C++ project created with cdirnuts."
+)
+
+-- Assemble the structure
+cdirnuts.append_file(src, mainCpp)
+cdirnuts.append_file(root, cmake)
+cdirnuts.append_file(root, readme)
+cdirnuts.append_subdir(root, src)
+cdirnuts.append_subdir(root, include)
+
+-- Write to disk
+cdirnuts.write_virtual_dir(root)
+print("C++ project created successfully!")
+```
+
+### Example 4: Writing Individual Files
+
+```lua
+-- Create and write a single file directly
+local configFile = cdirnuts.create_virtual_file(
+    "./config.json",
+    '{\n  "name": "myapp",\n  "version": "1.0.0"\n}\n'
+)
+
+cdirnuts.write_virtual_file(configFile)
+print("Config file created!")
+```
+
+### Example 5: Creating a Git Repository
+
+```lua
+local cwd = cdirnuts.getCWD()
+
+-- Create a project directory with .gitignore
+local repo = cdirnuts.create_virtual_dir(cwd .. "/my_repo")
+
+local gitignore = cdirnuts.create_virtual_file(
+    cwd .. "/my_repo/.gitignore",
+    "*.o\n*.exe\nbuild/\nnode_modules/\n"
+)
+
+cdirnuts.append_file(repo, gitignore)
+cdirnuts.write_virtual_dir(repo)
+
+-- Initialize git repository
+cdirnuts.execute_shell_command("git init " .. cwd .. "/my_repo")
+print("Git repository initialized!")
 ```
 
 ## Memory Management
 
-The cdirnuts Lua API uses Lua's garbage collector to automatically manage memory for all objects:
+The cdirnuts Lua API uses C++ RAII (Resource Acquisition Is Initialization) and Lua's userdata mechanism to automatically manage memory:
 
-- **Directory objects**: Automatically freed when garbage collected
-- **File objects**: Automatically freed when garbage collected
-- **PathInfo objects**: Automatically freed when garbage collected
+- **Directory objects**: Managed by sol2 userdata, automatically freed when garbage collected
+- **File objects**: Managed by sol2 userdata, automatically freed when garbage collected
+- **Move semantics**: Used internally for efficient ownership transfer
 
-### Important Notes
+### Important Notes on Ownership
 
-1. **Transfer of Ownership**: When using `addSubDirToDir`, ownership of the child directory is transferred to the parent. The child should not be used after this call.
+1. **Transfer of Ownership**:
+   - `append_subdir(parent, child)`: Transfers ownership of `child` to `parent`. After this call, the `child` object has been moved and should **not** be used again.
+   - `append_file(dir, file)`: Transfers ownership of `file` to `dir`. After this call, the `file` object has been moved and should **not** be used again.
 
-2. **Deep Copy**: When using `addFileToDir`, a deep copy of the file is made. You can continue to use the original file object.
+2. **Automatic Cleanup**: All objects are automatically cleaned up by Lua's garbage collector working with sol2's userdata mechanism. You don't need to manually free them.
 
-3. **Automatic Cleanup**: All objects are automatically cleaned up by Lua's garbage collector, so you don't need to manually free them.
+3. **Best Practice**: After transferring ownership via `append_subdir` or `append_file`, do not attempt to use the transferred object. It has been moved into the parent structure.
+
+### Example of Correct Ownership Handling
+
+```lua
+local project = cdirnuts.create_virtual_dir("./myproject")
+local src = cdirnuts.create_virtual_dir("./myproject/src")
+local file = cdirnuts.create_virtual_file("./myproject/src/main.c", "int main() {}")
+
+-- Transfer file to src directory
+cdirnuts.append_file(src, file)
+-- Do NOT use 'file' after this point!
+
+-- Transfer src to project
+cdirnuts.append_subdir(project, src)
+-- Do NOT use 'src' after this point!
+
+-- Only use 'project' from now on
+cdirnuts.write_virtual_dir(project)
+```
 
 ## Running Lua Scripts
 
 To execute a Lua script with the cdirnuts API:
 
 ```bash
-# Using the cdirnuts executable
-./cdirnuts --lua example.lua
+# Using the cdirnuts executable with default script
+./build/cdirnuts
 
-# Or with a standalone Lua interpreter (if you've built a module)
-lua example.lua
+# Using a custom Lua script
+./build/cdirnuts --config my_script.lua
 ```
 
 ## Error Handling
 
-Most functions return two values on error:
-
-- First value: `nil` or `false`
-- Second value: Error message string
-
-Always check return values:
+The new API uses Lua exceptions for error handling. Functions will throw Lua errors if they fail:
 
 ```lua
-local dir, err = cdirnuts.allocDir("./test")
-if not dir then
+-- Error handling with pcall
+local success, err = pcall(function()
+    local dir = cdirnuts.create_virtual_dir("./test")
+    cdirnuts.write_virtual_dir(dir)
+end)
+
+if not success then
     print("Error: " .. err)
-    return
 end
 ```
 
 ## Best Practices
 
-1. **Check return values**: Always check if operations succeeded
-2. **Use meaningful paths**: Use relative or absolute paths consistently
-3. **Order of operations**: Create all files and subdirectories before calling `createDir`
-4. **Error messages**: Use the error messages for debugging
+1. **Don't reuse transferred objects**: After calling `append_file` or `append_subdir`, the object has been moved and should not be used
+2. **Use meaningful paths**: Use absolute paths or paths relative to `getCWD()` for clarity
+3. **Build before writing**: Create all files and subdirectories before calling `write_virtual_dir`
+4. **Handle errors**: Use `pcall` for error handling when necessary
 5. **Path separators**: Use forward slashes `/` for cross-platform compatibility
 
 ## Complete Working Example
 
-See `example.lua` and `simple_example.lua` in the project root for complete, runnable examples.
+See `default_init.lua` in the project root for a complete, runnable example that demonstrates all features including:
+
+- Interactive user input
+- Directory and file creation
+- Building nested structures
+- Writing to the filesystem

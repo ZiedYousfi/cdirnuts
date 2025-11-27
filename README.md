@@ -49,7 +49,7 @@ cmake --build build
 ### Requirements
 
 - CMake 3.13 or higher
-- C23 compatible compiler (GCC, Clang)
+- C++23 compatible compiler (GCC, Clang)
 - Lua 5.4 (automatically managed via vcpkg)
 - vcpkg (for dependency management)
 
@@ -102,31 +102,32 @@ CDirNuts provides a comprehensive Lua API for creating custom project structures
 ```lua
 -- Create a simple project with custom structure
 
+-- Get current working directory
+local cwd = cdirnuts.getCWD()
+
 -- Allocate directories
-local project = cdirnuts.allocDir("./my_app")
-local src = cdirnuts.allocDir("./my_app/src")
+local project = cdirnuts.create_virtual_dir(cwd .. "/my_app")
+local src = cdirnuts.create_virtual_dir(cwd .. "/my_app/src")
 
 -- Create files
-local mainFile = cdirnuts.createFile(
-    "./my_app/src/main.c",
+local mainFile = cdirnuts.create_virtual_file(
+    cwd .. "/my_app/src/main.c",
     "#include <stdio.h>\n\nint main() {\n    printf(\"Hello!\\n\");\n    return 0;\n}\n"
 )
 
 -- Build the structure
-cdirnuts.addFileToDir(src, mainFile)
-cdirnuts.addSubDirToDir(project, src)
+cdirnuts.append_file(src, mainFile)
+cdirnuts.append_subdir(project, src)
 
 -- Create on filesystem
-cdirnuts.createDir(project)
+cdirnuts.write_virtual_dir(project)
 ```
 
 ### Available Lua Functions
 
-- **Directory Management**: `allocDir()`, `createDir()`, `addSubDirToDir()`
-- **File Operations**: `createFile()`, `writeFile()`, `addFileToDir()`
-- **Path Utilities**: `parsePath()`, `constructPath()`, `copySubstring()`
-- **Command Execution**: `executeCommand()`
-- **User Interaction**: `getCwd()`
+- **Directory Management**: `create_virtual_dir()`, `write_virtual_dir()`, `append_subdir()`
+- **File Operations**: `create_virtual_file()`, `write_virtual_file()`, `append_file()`
+- **Utilities**: `getCWD()`, `execute_shell_command()`
 
 See `default_init.lua` in the repository for a complete working example.
 
@@ -167,9 +168,10 @@ Runs the provided `default_init.lua` script to create a custom project with:
 ```bash
 # Create a custom Lua template
 cat > my_template.lua << 'EOF'
-local project = cdirnuts.allocDir("./microservice")
+local cwd = cdirnuts.getCWD()
+local project = cdirnuts.create_virtual_dir(cwd .. "/microservice")
 -- ... add your custom structure
-cdirnuts.createDir(project)
+cdirnuts.write_virtual_dir(project)
 EOF
 
 # Save as preset
@@ -199,16 +201,32 @@ CDirNuts is built with a modular architecture:
 
 ## Testing
 
+CDirNuts includes a comprehensive test suite using Google Test (GTest).
+
 ```bash
-# Build with tests enabled
-cmake --preset=default -DBUILD_TESTS=ON
+# Build the project with tests (testing is enabled by default)
+cmake --preset vcpkg
 cmake --build build
 
-# Run tests
-./build/cdirnuts_test
-# or
-ctest --test-dir build
+# Run tests using CTest
+cd build
+ctest --output-on-failure
+
+# Or run the test executable directly
+./build/cdirnuts_tests
 ```
+
+### Test Coverage
+
+The test suite includes:
+
+- **File System Tests** (`test_fs.cpp`): Path manipulation, file/directory creation, nested structures
+- **Preset Tests** (`test_presets.cpp`): Preset management, save/load operations, edge cases
+- **Lua Engine Tests** (`test_lua.cpp`): Lua API bindings, script execution, error handling
+
+All 48 tests verify core functionality and ensure reliability across different scenarios.
+
+See [tests/README.md](tests/README.md) for more information about the test suite.
 
 ## Contributing
 

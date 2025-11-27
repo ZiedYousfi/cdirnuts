@@ -8,7 +8,7 @@ print("=== cdirnuts Lua API Example ===\n")
 -- The cdirnuts API is already registered globally when embedded
 -- No need to require it
 
--- get the cwd
+-- Get the current working directory
 local cwd = cdirnuts.getCWD()
 
 -- Ask user for the project name
@@ -33,105 +33,83 @@ if language ~= "c" and language ~= "cpp" then
 end
 local ext = (language == "cpp") and "cpp" or "c"
 print("   ✓ Language set to: " .. language .. " (extension: " .. ext .. ")")
-print("2. Creating Project Structure:")
+
+print("\n2. Creating Project Structure:")
 print("   ---------------------------")
 
 -- Create root directory
-local rootDir = cdirnuts.allocDir(cwd .. "/" .. projectName)
-print("   ✓ Allocated root directory: ./" .. projectName)
+local rootDir = cdirnuts.create_virtual_dir(cwd .. "/" .. projectName)
+print("   ✓ Created root directory: ./" .. projectName)
 
 -- Create src directory
-local srcDir = cdirnuts.allocDir(cwd .. "/" .. projectName .. "/src")
-print("   ✓ Allocated src directory")
+local srcDir = cdirnuts.create_virtual_dir(cwd .. "/" .. projectName .. "/src")
+print("   ✓ Created src directory")
 
 -- Create include directory
-local includeDir = cdirnuts.allocDir(cwd .. "/" .. projectName .. "/include")
-print("   ✓ Allocated include directory")
+local includeDir = cdirnuts.create_virtual_dir(cwd .. "/" .. projectName .. "/include")
+print("   ✓ Created include directory")
 
 -- Create tests directory
-local testsDir = cdirnuts.allocDir(cwd .. "/" .. projectName .. "/tests")
-print("   ✓ Allocated tests directory")
+local testsDir = cdirnuts.create_virtual_dir(cwd .. "/" .. projectName .. "/tests")
+print("   ✓ Created tests directory")
 
--- 2. Create files
+-- Create files
 print("\n3. Creating Files:")
 print("   ---------------")
 
 -- Create README.md
-local readmeFile = cdirnuts.createFile(
+local readmeFile = cdirnuts.create_virtual_file(
     cwd .. "/" .. projectName .. "/README.md",
-    [[# Test Project
+    [[# ]] .. projectName .. [[
 
-    This project was created using the cdirnuts Lua API!
+This project was created using the cdirnuts Lua API!
 
-    ## Features
-    - Automatic project scaffolding
-    - Lua-based configuration
-    - Easy to extend
+## Features
+- Automatic project scaffolding
+- Lua-based configuration
+- Easy to extend
 ]]
 )
-
-if readmeFile then
-    print("   ✓ Created README.md file object")
-    local success = cdirnuts.addFileToDir(rootDir, readmeFile)
-    if success then
-        print("   ✓ Added README.md to root directory")
-    end
-end
+print("   ✓ Created README.md file object")
 
 -- Create main.c or main.cpp
 local mainFileName = "main." .. ext
 local mainContent
 if language == "cpp" then
     mainContent = [[#include <iostream>
-#include "../include/app.h"
 
 int main(int argc, char **argv) {
-    std::cout << "Hello from " << APP_NAME << "!" << std::endl;
+    std::cout << "Hello from ]] .. projectName .. [[!" << std::endl;
     return 0;
 }
 ]]
 else
     mainContent = [[#include <stdio.h>
-#include "../include/app.h"
 
 int main(int argc, char **argv) {
-    printf("Hello from %s!\n", APP_NAME);
+    printf("Hello from ]] .. projectName .. [[!\n");
     return 0;
 }
 ]]
 end
 
-local mainFile = cdirnuts.createFile(
+local mainFile = cdirnuts.create_virtual_file(
     cwd .. "/" .. projectName .. "/src/" .. mainFileName,
     mainContent
 )
-if mainFile then
-    print("   ✓ Created " .. mainFileName .. " file object")
-    local success = cdirnuts.addFileToDir(srcDir, mainFile)
-    if success then
-        print("   ✓ Added " .. mainFileName .. " to src directory")
-    end
-end
+print("   ✓ Created " .. mainFileName .. " file object")
 
 -- Create header file
-local headerFile = cdirnuts.createFile(
+local headerFile = cdirnuts.create_virtual_file(
     cwd .. "/" .. projectName .. "/include/app.h",
     [[#pragma once
-
-#include <stdio.h>
 
 void app_init(void);
 void app_run(void);
 void app_cleanup(void);
 ]]
 )
-if headerFile then
-    print("   ✓ Created app.h file object")
-    local success = cdirnuts.addFileToDir(includeDir, headerFile)
-    if success then
-        print("   ✓ Added app.h to include directory")
-    end
-end
+print("   ✓ Created app.h file object")
 
 -- Create test file
 local testFileName = "test_main." .. ext
@@ -168,18 +146,11 @@ int main(void) {
 ]]
 end
 
-local testFile = cdirnuts.createFile(
+local testFile = cdirnuts.create_virtual_file(
     cwd .. "/" .. projectName .. "/tests/" .. testFileName,
     testContent
 )
-
-if testFile then
-    print("   ✓ Created " .. testFileName .. " file object")
-    local success = cdirnuts.addFileToDir(testsDir, testFile)
-    if success then
-        print("   ✓ Added " .. testFileName .. " to tests directory")
-    end
-end
+print("   ✓ Created " .. testFileName .. " file object")
 
 -- Create CMakeLists.txt
 local cmakeContent
@@ -207,60 +178,74 @@ add_executable(]] .. projectName .. [[_tests tests/test_main.c)
 ]]
 end
 
-local cmakeFile = cdirnuts.createFile(
+local cmakeFile = cdirnuts.create_virtual_file(
     cwd .. "/" .. projectName .. "/CMakeLists.txt",
     cmakeContent
 )
+print("   ✓ Created CMakeLists.txt file object")
 
-if cmakeFile then
-    print("   ✓ Created CMakeLists.txt file object")
-    local success = cdirnuts.addFileToDir(rootDir, cmakeFile)
-    if success then
-        print("   ✓ Added CMakeLists.txt to root directory")
-    end
-end
+-- Create .gitignore
+local gitignoreFile = cdirnuts.create_virtual_file(
+    cwd .. "/" .. projectName .. "/.gitignore",
+    [[# Build artifacts
+build/
+*.o
+*.a
+*.so
+*.dylib
 
--- 3. Add subdirectories to root
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+]]
+)
+print("   ✓ Created .gitignore file object")
+
+-- Build directory tree
 print("\n4. Building Directory Tree:")
 print("   ------------------------")
 
-local success = cdirnuts.addSubDirToDir(rootDir, srcDir)
-if success then
-    print("   ✓ Added src to root directory")
-end
+cdirnuts.append_file(rootDir, readmeFile)
+print("   ✓ Added README.md to root directory")
 
-success = cdirnuts.addSubDirToDir(rootDir, includeDir)
-if success then
-    print("   ✓ Added include to root directory")
-end
+cdirnuts.append_file(rootDir, cmakeFile)
+print("   ✓ Added CMakeLists.txt to root directory")
 
-success = cdirnuts.addSubDirToDir(rootDir, testsDir)
-if success then
-    print("   ✓ Added tests to root directory")
-end
+cdirnuts.append_file(rootDir, gitignoreFile)
+print("   ✓ Added .gitignore to root directory")
 
--- 5. Create the entire structure on disk
+cdirnuts.append_file(srcDir, mainFile)
+print("   ✓ Added " .. mainFileName .. " to src directory")
+
+cdirnuts.append_file(includeDir, headerFile)
+print("   ✓ Added app.h to include directory")
+
+cdirnuts.append_file(testsDir, testFile)
+print("   ✓ Added " .. testFileName .. " to tests directory")
+
+cdirnuts.append_subdir(rootDir, srcDir)
+print("   ✓ Added src to root directory")
+
+cdirnuts.append_subdir(rootDir, includeDir)
+print("   ✓ Added include to root directory")
+
+cdirnuts.append_subdir(rootDir, testsDir)
+print("   ✓ Added tests to root directory")
+
+-- Write the entire structure to disk
 print("\n5. Writing to Filesystem:")
 print("   ----------------------")
 
-local success = cdirnuts.createDir(rootDir)
-if success then
-    print("   ✓ Successfully created entire project structure!")
-else
-    print("   ✗ Failed to create project structure")
-    os.exit(1)
-end
+cdirnuts.write_virtual_dir(rootDir)
+print("   ✓ Successfully created entire project structure!")
 
--- 5. Execute a command (optional)
-print("\n6. Running Commands:")
-print("   -----------------")
-
-local success = cdirnuts.executeCommand("git init " .. cwd .. "/" .. projectName)
-if success then
-    print("   ✓ Command executed successfully")
-else
-    print("   ✗ Command execution failed")
-end
+cdirnuts.execute_shell_command("git init ")
 
 print("\n=== Example Complete ===")
 print("\nProject structure created in " .. cwd .. "/" .. projectName .. "/")

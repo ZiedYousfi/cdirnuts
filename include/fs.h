@@ -1,0 +1,60 @@
+#pragma once
+
+#include <filesystem>
+#include <string>
+#include <vector>
+
+namespace fs {
+
+class Path {
+private:
+  std::filesystem::path path_;
+
+public:
+  Path() : path_() {}
+  Path(const std::string &path) : path_(path) {}
+  Path(const std::filesystem::path &path) : path_(path) {}
+  Path from_parent(const std::string &parent, const std::string &name) const;
+  ~Path();
+  std::string to_string() const { return path_.string(); }
+  std::filesystem::path to_path() const { return path_; }
+};
+
+class File {
+private:
+  Path path_;
+  std::string content_;
+
+public:
+  File() : path_(std::filesystem::path()), content_("") {}
+  File(const Path &path, const std::string &content)
+      : path_(path), content_(content) {}
+  File(const std::string &path, const std::string &content)
+      : path_(path), content_(content) {}
+  File(const Path &path) : path_(path), content_("") {}
+  File(const std::string &path) : path_(path), content_("") {}
+  void write_to_disk() const;
+  ~File();
+};
+
+class Dir {
+private:
+  Path path_;
+  std::vector<Dir> sub_dir_;
+  std::vector<File> files_;
+
+public:
+  Dir() : path_(std::filesystem::path()) {}
+  Dir(const Path &path) : path_(path) {}
+  Dir(const std::string &path) : path_(path) {}
+  /// @brief Add a sub-directory to the current directory. Takes ownership.
+  /// @param dir
+  void add_subdir(Dir &&dir) noexcept;
+  /// @brief Add a file to the current directory. Takes ownership.
+  /// @param file
+  void add_file(File &&file) noexcept;
+  void write_to_disk() const;
+  ~Dir();
+};
+
+} // namespace fs

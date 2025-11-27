@@ -27,9 +27,25 @@
         "CMAKE_BUILD_TYPE": "Debug",
         "DEBUG_FLAG": "ON"
       }
+    },
+    {
+      "name": "vcpkg-release",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "CMAKE_BUILD_TYPE": "Release",
+        "DEBUG_FLAG": "OFF",
+        "BUILD_TESTS": "OFF"
+      }
     }
   ],
   "buildPresets": [
+    {
+      "name": "vcpkg",
+      "configurePreset": "vcpkg",
+      "description": "Build using the vcpkg toolchain and Ninja"
+    },
     {
       "name": "build-tests",
       "configurePreset": "vcpkg-tests",
@@ -37,6 +53,16 @@
       "targets": [
         "cdirnuts_test"
       ]
+    },
+    {
+      "name": "debug",
+      "configurePreset": "vcpkg-debug",
+      "description": "Build in Debug mode using the vcpkg toolchain and Ninja"
+    },
+    {
+      "name": "release",
+      "configurePreset": "vcpkg-release",
+      "description": "Build in Release mode using the vcpkg toolchain and Ninja"
     }
   ]
 }
